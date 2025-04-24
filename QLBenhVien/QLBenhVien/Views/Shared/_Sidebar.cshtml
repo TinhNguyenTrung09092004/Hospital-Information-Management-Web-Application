@@ -1,0 +1,24 @@
+﻿@{
+    var permissionIds = User.FindAll("PermissionID").Select(c => c.Value).ToList();
+}
+
+<aside>
+    <ul>
+        @if (permissionIds.Contains("1"))
+        {
+            <li><a asp-controller="NhanSu" asp-action="Index">Quản lý nhân sự</a></li>
+        }
+
+        @* PermissionID = 2 là 'Quản lý thuốc' *@
+        @if (permissionIds.Contains("2"))
+        {
+            <li><a asp-controller="Thuoc" asp-action="Index">Quản lý thuốc</a></li>
+        }
+
+        @* PermissionID = 3 là 'Lịch làm việc' *@
+        @if (permissionIds.Contains("3"))
+        {
+            <li><a asp-controller="LichLamViec" asp-action="Index">Lịch làm việc</a></li>
+        }
+    </ul>
+</aside>
