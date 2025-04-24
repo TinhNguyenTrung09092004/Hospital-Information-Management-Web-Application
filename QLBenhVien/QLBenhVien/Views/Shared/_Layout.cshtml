@@ -1,0 +1,77 @@
+﻿@{
+    var permissionIds = User.FindAll("PermissionID").Select(p => p.Value).ToList();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - QLBenhVien</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/QLBenhVien.styles.css" asp-append-version="true" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+        .sidebar {
+            width: 220px;
+            background: #2c3e50;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin: 10px 0;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="containter">
+        <div class="wrap">
+            <div class="sidebar">
+                <h3>Menu</h3>
+                <ul>
+                    @if (permissionIds.Contains("1"))
+                    {
+                        <li><a asp-controller="NhanSu" asp-action="Index">Quản lý nhân sự</a></li>
+                    }
+                    @if (permissionIds.Contains("2"))
+                    {
+                        <li><a asp-controller="Thuoc" asp-action="Index">Quản lý thuốc</a></li>
+                    }
+                    @if (permissionIds.Contains("3"))
+                    {
+                        <li><a>Lịch làm việc</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
