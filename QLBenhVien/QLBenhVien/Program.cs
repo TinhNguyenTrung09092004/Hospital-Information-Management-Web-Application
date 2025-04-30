@@ -16,8 +16,8 @@ builder.Services.AddControllersWithViews(options =>
 
 
 
-builder.Services.AddDbContext<QlbenhVienContext>(options => options.UseSqlServer
-(builder.Configuration.GetConnectionString("QLBenhVien")));
+builder.Services.AddDbContext<QlbenhVienContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("QLBenhVien")));
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>

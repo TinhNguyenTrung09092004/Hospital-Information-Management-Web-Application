@@ -1,24 +1,56 @@
-﻿@{
-    var permissionIds = User.FindAll("PermissionID").Select(c => c.Value).ToList();
-}
+﻿@model List<QLBenhVien.Entities.Permission>
 
 <aside>
-    <ul>
-        @if (permissionIds.Contains("1"))
+    <ul class="sidebar-menu">
+        @foreach (var permission in Model)
         {
-            <li><a asp-controller="NhanSu" asp-action="Index">Quản lý nhân sự</a></li>
-        }
+            if (!string.IsNullOrEmpty(permission.PermissionName))
+            {
 
-        @* PermissionID = 2 là 'Quản lý thuốc' *@
-        @if (permissionIds.Contains("2"))
-        {
-            <li><a asp-controller="Thuoc" asp-action="Index">Quản lý thuốc</a></li>
-        }
+                if (permission.PermissionName.StartsWith("Modify_"))
+                {
+                    var controllerName = permission.PermissionName.Split('_')[1];
+                    var displayName = GetDisplayName(controllerName);
 
-        @* PermissionID = 3 là 'Lịch làm việc' *@
-        @if (permissionIds.Contains("3"))
-        {
-            <li><a asp-controller="LichLamViec" asp-action="Index">Lịch làm việc</a></li>
+                    <li class="dropdown">
+                        <a href="#">@displayName ▸</a>
+                        <ul class="submenu">
+                            <li><a asp-controller="@controllerName" asp-action="Create">Tạo mới</a></li>
+                            <li><a asp-controller="@controllerName" asp-action="Index">Xem danh sách</a></li>
+                            <li><a asp-controller="@controllerName" asp-action="Edit">Chỉnh sửa</a></li>
+                            <li><a asp-controller="@controllerName" asp-action="Delete">Xóa</a></li>
+                        </ul>
+                    </li>
+                }
+                else if (permission.PermissionName.StartsWith("View_"))
+                {
+                    var controllerName = permission.PermissionName.Split('_')[1];
+                    var displayName = GetDisplayName(controllerName);
+
+                    <li>
+                        <a asp-controller="@controllerName" asp-action="Index">@displayName</a>
+                    </li>
+                }
+            }
         }
     </ul>
 </aside>
+
+<link rel="stylesheet" href="~/css/sidebar.css" />
+
+@functions {
+    private string GetDisplayName(string controllerName)
+    {
+        switch (controllerName)
+        {
+            case "PhongBan": return "Quản lý phòng ban";
+            case "Khoa": return "Quản lý khoa";
+            case "BacSi": return "Quản lý bác sĩ";
+            case "NhanVien": return "Quản lý nhân viên";
+            case "LichLamViec": return "Quản lý lịch làm việc";
+            case "ChamCong": return "Chấm công";
+            case "Luong": return "Lương";
+            default: return controllerName;
+        }
+    }
+}
