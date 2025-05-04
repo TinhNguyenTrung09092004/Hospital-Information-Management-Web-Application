@@ -48,20 +48,7 @@
         <div class="wrap">
             <div class="sidebar">
                 <h3>Menu</h3>
-                <ul>
-                    @if (permissionIds.Contains("1"))
-                    {
-                        <li><a asp-controller="NhanSu" asp-action="Index">Quản lý nhân sự</a></li>
-                    }
-                    @if (permissionIds.Contains("2"))
-                    {
-                        <li><a asp-controller="Thuoc" asp-action="Index">Quản lý thuốc</a></li>
-                    }
-                    @if (permissionIds.Contains("3"))
-                    {
-                        <li><a>Lịch làm việc</a></li>
-                    }
-                </ul>
+                @await Html.PartialAsync("_Sidebar");
             </div>
             <div class="content">
                 @RenderBody()
