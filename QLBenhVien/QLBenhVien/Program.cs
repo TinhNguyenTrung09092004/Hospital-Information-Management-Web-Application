@@ -1,31 +1,28 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using QLBenhVien.Entities;
+using QLBenhVien.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllersWithViews();
 
-builder.Services.AddControllersWithViews(options =>
-{
-    var policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
-});
+//builder.Services.AddDbContext<QlbenhVienContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("QLBenhVien")));
 
+//builder.Services.AddDbContext<QlbenhVienAccountContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("QLBenhVien_ACCOUNT")));
 
+builder.Services.AddSingleton<KeyVaultService>();
 
-builder.Services.AddDbContext<QlbenhVienContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("QLBenhVien")));
-
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
+        options.LoginPath = "/Account/Login";   
+        options.LogoutPath = "/Account/Logout";  
+        options.AccessDeniedPath = "/Account/AccessDenied"; 
     });
-
-builder.Services.AddAuthorization();
 
 
 var app = builder.Build();

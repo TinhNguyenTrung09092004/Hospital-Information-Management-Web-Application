@@ -17,5 +17,9 @@ public partial class Benhnhan
 
     public DateTime? NgayTao { get; set; }
 
+    public virtual Dieuphoi? Dieuphoi { get; set; }
+
     public virtual ICollection<Khambenh> Khambenhs { get; set; } = new List<Khambenh>();
+
+    public virtual ThongtinPhongkham? ThongtinPhongkham { get; set; }
 }

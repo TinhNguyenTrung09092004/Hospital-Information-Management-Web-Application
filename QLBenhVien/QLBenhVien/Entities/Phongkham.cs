@@ -16,4 +16,6 @@ public partial class Phongkham
     public virtual ICollection<LichLamviec> LichLamviecs { get; set; } = new List<LichLamviec>();
 
     public virtual Khoa? MaKhoaNavigation { get; set; }
+
+    public virtual ICollection<ThongtinPhongkham> ThongtinPhongkhams { get; set; } = new List<ThongtinPhongkham>();
 }
