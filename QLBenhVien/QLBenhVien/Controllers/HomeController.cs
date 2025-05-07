@@ -1,38 +1,31 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using QLBenhVien.Entities;
-using QLBenhVien.Models;
 using System.Diagnostics;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using QLBenhVien.Models;
 
-namespace QLBenhVien.Controllers
+namespace QLBenhVien.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(ILogger<HomeController> logger)
     {
-        private readonly QlbenhVienContext _context;
-        private readonly ILogger<HomeController> _logger;
+        _logger = logger;
+    }
 
-        public HomeController(ILogger<HomeController> logger, QlbenhVienContext context)
-        {
-            _logger = logger;
-            _context = context;
-        }
+    public IActionResult Index()
+    {
+        return View();
+    }
 
-        public IActionResult Index()
-        {
-            var permissions = _context.Permissions.ToList();
+    public IActionResult Privacy()
+    {
+        return View();
+    }
 
-            return View(permissions);
-        }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

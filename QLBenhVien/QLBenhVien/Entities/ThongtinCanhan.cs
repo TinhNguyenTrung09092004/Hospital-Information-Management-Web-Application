@@ -21,8 +21,6 @@ public partial class ThongtinCanhan
 
     public byte[] PhuCap { get; set; } = null!;
 
-    public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
-
     public virtual Bacsi? Bacsi { get; set; }
 
     public virtual ICollection<Chamcong> Chamcongs { get; set; } = new List<Chamcong>();

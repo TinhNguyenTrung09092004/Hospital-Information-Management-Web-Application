@@ -9,13 +9,9 @@ public partial class Account
 
     public byte[]? PasswordHash { get; set; }
 
-    public string? UserId { get; set; }
+    public string? TypeId { get; set; }
 
     public DateTime? CreatedDate { get; set; }
-
-    public virtual ICollection<Logging> Loggings { get; set; } = new List<Logging>();
-
-    public virtual ThongtinCanhan? User { get; set; }
 
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }
