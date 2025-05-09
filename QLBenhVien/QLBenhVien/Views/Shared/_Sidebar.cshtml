@@ -1,26 +1,146 @@
 ﻿@{
     var permissionIds = User.FindAll("PermissionID").Select(c => c.Value).ToList();
-    var username = User.Identity?.Name ?? "Người dùng";
 }
 
-<aside class="sidebar">
-    <h4>Xin chào, @username</h4>
-    <ul>
-        @if (permissionIds.Contains("1"))
-        {
-            <li><a asp-controller="NhanSu" asp-action="Index">Quản lý nhân sự</a></li>
-        }
-
+<aside>
+    <ul class="sidebar-menu">
         @if (permissionIds.Contains("2"))
         {
-            <li><a asp-controller="Thuoc" asp-action="Index">Quản lý thuốc</a></li>
+            <li class="dropdown" id="modifyPhongBan">
+                <a href="#">Quản lý Phòng Ban ▸</a>
+                <ul class="submenu">
+                    <li><a id="xemPhongBan" asp-controller="PhongBan" asp-action="Index">Xem Phòng Ban</a></li>
+                    <li><a id="themPhongBan" asp-controller="PhongBan" asp-action="Create">Thêm Phòng Ban</a></li>
+                    <li><a id="xoaPhongBan" asp-controller="PhongBan" asp-action="Delete">Xóa Phòng Ban</a></li>
+                    <li><a id="suaPhongBan" asp-controller="PhongBan" asp-action="Edit">Sửa Phòng Ban</a></li>
+                </ul>
+            </li>
         }
+
 
         @if (permissionIds.Contains("3"))
         {
-            <li><a asp-controller="LichLamViec" asp-action="Index">Lịch làm việc</a></li>
+            <li class="dropdown" id="modifyKhoa">
+                <a href="#">Quản lý Khoa ▸</a>
+                <ul class="submenu">
+                    <li><a id="xemKhoa" asp-controller="Khoa" asp-action="Index">Xem Khoa</a></li>
+                    <li><a id="themKhoa" asp-controller="Khoa" asp-action="Create">Thêm Khoa</a></li>
+                    <li><a id="xoaKhoa" asp-controller="Khoa" asp-action="Delete">Xóa Khoa</a></li>
+                    <li><a id="suaKhoa" asp-controller="Khoa" asp-action="Edit">Sửa Khoa</a></li>
+                </ul>
+            </li>
         }
+
+
+        @if (permissionIds.Contains("4"))
+        {
+            <li class="dropdown" id="modifyBacSi">
+                <a href="#">Quản lý Bác sĩ ▸</a>
+                <ul class="submenu">
+                    <li><a id="xemBacSi" asp-controller="BacSi" asp-action="Index">Xem Bác sĩ</a></li>
+                    <li><a id="themBacSi" asp-controller="BacSi" asp-action="Create">Thêm Bác sĩ</a></li>
+                    <li><a id="xoaBacSi" asp-controller="BacSi" asp-action="Delete">Xóa Bác sĩ</a></li>
+                    <li><a id="suaBacSi" asp-controller="BacSi" asp-action="Edit">Sửa Bác sĩ</a></li>
+                </ul>
+            </li>
+        }
+
+
+        @if (permissionIds.Contains("5"))
+        {
+            <li class="dropdown" id="modifyNhanVien">
+                <a href="#">Quản lý Nhân viên ▸</a>
+                <ul class="submenu">
+                    <li><a id="xemNhanVien" asp-controller="NhanVien" asp-action="Index">Xem Nhân viên</a></li>
+                    <li><a id="themNhanVien" asp-controller="NhanVien" asp-action="Create">Thêm Nhân viên</a></li>
+                    <li><a id="xoaNhanVien" asp-controller="NhanVien" asp-action="Delete">Xóa Nhân viên</a></li>
+                    <li><a id="suaNhanVien" asp-controller="NhanVien" asp-action="Edit">Sửa Nhân viên</a></li>
+                </ul>
+            </li>
+        }
+
+        @if (permissionIds.Contains("9"))
+        {
+            <li class="dropdown" id="modifyDonGiaDichVu">
+                <a href="#">Quản lý Đơn giá Dịch vụ ▸</a>
+                <ul class="submenu">
+                    <li><a asp-controller="DonGiaDichVu" asp-action="Index">Xem Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="DonGiaDichVu" asp-action="Create">Thêm Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="DonGiaDichVu" asp-action="Edit">Sửa Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="DonGiaDichVu" asp-action="Delete">Xóa Đơn giá Dịch vụ</a></li>
+                </ul>
+            </li>
+        }
+
+        @if (permissionIds.Contains("10"))
+        {
+            <li class="dropdown" id="modifyDonGiaThuoc">
+                <a href="#">Quản lý Đơn giá Thuốc ▸</a>
+                <ul class="submenu">
+                    <li><a asp-controller="DonGiaThuoc" asp-action="Index">Xem Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="DonGiaThuoc" asp-action="Create">Thêm Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="DonGiaThuoc" asp-action="Edit">Sửa Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="DonGiaThuoc" asp-action="Delete">Xóa Đơn giá Thuốc</a></li>
+                </ul>
+            </li>
+        }
+
+        @if (permissionIds.Contains("11"))
+        {
+            <li id="viewHoaDonThuoc">
+                <a asp-controller="HoaDon" asp-action="DanhSachThuoc">Xem Hóa đơn Thuốc</a>
+            </li>
+        }
+
+        @if (permissionIds.Contains("12"))
+        {
+            <li id="viewHoaDonKCB">
+                <a asp-controller="HoaDon" asp-action="DanhSachKCB">Xem Hóa đơn Khám chữa bệnh</a>
+            </li>
+        }
+
+        @if (permissionIds.Contains("13"))
+        {
+            <li id="viewBacSi">
+                <a asp-controller="BacSi" asp-action="Index">Xem Danh sách Bác sĩ</a>
+            </li>
+        }
+
+        @if (permissionIds.Contains("14"))
+        {
+            <li id="viewNhanVien">
+                <a asp-controller="NhanVien" asp-action="Index">Xem Danh sách Nhân viên</a>
+            </li>
+        }
+
+        @if (permissionIds.Contains("6"))
+        {
+            <li class="dropdown" id="modifyLichLamViec">
+                <a href="#">Quản lý Lịch làm việc ▸</a>
+                <ul class="submenu">
+                    <li><a id="xemLichLamViec" asp-controller="LichLamViec" asp-action="Index">Xem Lịch làm việc</a></li>
+                    <li><a id="themLichLamViec" asp-controller="LichLamViec" asp-action="Create">Thêm Lịch làm việc</a></li>
+                    <li><a id="xoaLichLamViec" asp-controller="LichLamViec" asp-action="Delete">Xóa Lịch làm việc</a></li>
+                    <li><a id="suaLichLamViec" asp-controller="LichLamViec" asp-action="Edit">Sửa Lịch làm việc</a></li>
+                </ul>
+            </li>
+        }
+
+        @if (permissionIds.Contains("7"))
+        {
+            <li id="viewChamCong">
+                <a id="xemChamCong" asp-controller="ChamCong" asp-action="Index">Xem Chấm công</a>
+            </li>
+        }
+
+
+        @if (permissionIds.Contains("8"))
+        {
+            <li id="viewLuong">
+                <a id="xemLuong" asp-controller="Luong" asp-action="Index">Xem Lương</a>
+            </li>
+        }
+
 
     </ul>
 </aside>
-

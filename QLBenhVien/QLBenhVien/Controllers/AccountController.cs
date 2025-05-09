@@ -71,13 +71,19 @@ namespace QLBenhVien.Controllers
             {
                 new Claim(ClaimTypes.Name, account.Username ?? ""),
                 new Claim("TypeID", account.TypeID ?? ""),
-                new Claim("PermissionID", account.PermissionID?.ToString() ?? ""),
+                //new Claim("PermissionID", account.PermissionID?.ToString() ?? ""),
                 new Claim("DBUser", dbUser),
                 new Claim("DBPass", dbPass),
                 new Claim("DBName", dataDb),
                 new Claim("Server", server)
             };
-
+            foreach (var permission in result)
+            {
+                if (permission.PermissionID.HasValue)
+                {
+                    claims.Add(new Claim("PermissionID", permission.PermissionID.Value.ToString()));
+                }
+            }
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
