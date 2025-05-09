@@ -5,7 +5,7 @@ https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows
 
 
 # 2 Tạo tài khoản Azure
-Tạo tài khoản Microsoft Azure
+Tạo tài khoản Microsoft Azure 
 
 # 3 Chờ được add vào keyvault 
 
