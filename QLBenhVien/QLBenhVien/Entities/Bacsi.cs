@@ -11,6 +11,10 @@ public partial class Bacsi
 
     public string? ChuyenMon { get; set; }
 
+    public virtual ICollection<ChitietKhambenh> ChitietKhambenhMaBacSiKhamNavigations { get; set; } = new List<ChitietKhambenh>();
+
+    public virtual ICollection<ChitietKhambenh> ChitietKhambenhMaBacSiYeuCauNavigations { get; set; } = new List<ChitietKhambenh>();
+
     public virtual ICollection<Khambenh> Khambenhs { get; set; } = new List<Khambenh>();
 
     public virtual ThongtinCanhan MaBacSiNavigation { get; set; } = null!;

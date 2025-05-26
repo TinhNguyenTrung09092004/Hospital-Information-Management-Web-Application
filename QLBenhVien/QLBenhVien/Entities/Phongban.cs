@@ -9,7 +9,5 @@ public partial class Phongban
 
     public string TenPhongBan { get; set; } = null!;
 
-    public virtual ICollection<Dieuphoi> Dieuphois { get; set; } = new List<Dieuphoi>();
-
     public virtual ICollection<Nhanvien> Nhanviens { get; set; } = new List<Nhanvien>();
 }

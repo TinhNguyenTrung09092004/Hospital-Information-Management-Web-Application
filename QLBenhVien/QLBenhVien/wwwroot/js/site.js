@@ -1,4 +1,16 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿document.addEventListener("DOMContentLoaded", function () {
+    const logoutLink = document.getElementById("logoutLink");
+    if (logoutLink) {
+        logoutLink.addEventListener("click", function (e) {
+            e.preventDefault();
 
-// Write your JavaScript code.
+            const confirmLogout = confirm("Bạn có chắc chắn muốn đăng xuất không?");
+            if (confirmLogout) {
+               
+                localStorage.removeItem("DoctorKey");
+
+                window.location.href = '/Account/Logout';
+            }
+        });
+    }
+});

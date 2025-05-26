@@ -24,6 +24,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied"; 
     });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<DynamicConnectionProvider>();
 
 var app = builder.Build();
 

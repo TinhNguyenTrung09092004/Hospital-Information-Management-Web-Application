@@ -25,5 +25,7 @@ public partial class ThongtinCanhan
 
     public virtual ICollection<Chamcong> Chamcongs { get; set; } = new List<Chamcong>();
 
+    public virtual ICollection<LichLamviec> LichLamviecs { get; set; } = new List<LichLamviec>();
+
     public virtual Nhanvien? Nhanvien { get; set; }
 }

@@ -11,11 +11,15 @@ public partial class Phongkham
 
     public string? MaKhoa { get; set; }
 
-    public virtual ICollection<Khambenh> Khambenhs { get; set; } = new List<Khambenh>();
+    public int? MaDichVu { get; set; }
+
+    public virtual ICollection<ChitietKhambenh> ChitietKhambenhs { get; set; } = new List<ChitietKhambenh>();
+
+    public virtual ICollection<DanhsachBenhnhan> DanhsachBenhnhans { get; set; } = new List<DanhsachBenhnhan>();
 
     public virtual ICollection<LichLamviec> LichLamviecs { get; set; } = new List<LichLamviec>();
 
-    public virtual Khoa? MaKhoaNavigation { get; set; }
+    public virtual Dichvu? MaDichVuNavigation { get; set; }
 
-    public virtual ICollection<ThongtinPhongkham> ThongtinPhongkhams { get; set; } = new List<ThongtinPhongkham>();
+    public virtual Khoa? MaKhoaNavigation { get; set; }
 }

@@ -1,0 +1,270 @@
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using QLBenhVien.Entities;
+using QLBenhVien.Models;
+using QLBenhVien.Services;
+using System.Security.Claims;
+using System.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace QLBenhVien.Controllers
+{
+    [Authorize]
+    public class BacSiController : Controller
+    {
+        private readonly DynamicConnectionProvider _connProvider;
+
+        public BacSiController(DynamicConnectionProvider connProvider)
+        {
+            _connProvider = connProvider;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var maPhongKham = User.FindFirst("MaPhongKham")?.Value;
+
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var context = QlbenhVienContextFactory.Create(connStr);
+
+            var param = new SqlParameter("@maPhongKham", maPhongKham);
+            var result = await context.ViewBenhNhanTrongNgays
+                .FromSqlRaw("EXEC sp_LayBenhNhanDauTienTheoPhong @maPhongKham", param)
+                .ToListAsync();
+
+            var benhNhan = result.FirstOrDefault();
+
+            if (benhNhan == null)
+            {
+                ViewBag.KhongConBenhNhan = true;
+                ViewBag.DanhSachDichVu = new SelectList(new List<string>(), "", "");
+                return View();
+            }
+
+
+            var maKhamBenh = benhNhan.MaKhamBenh.ToString();
+
+            var identity = (ClaimsIdentity)User.Identity!;
+            identity.AddClaim(new Claim("MaKhamBenh", maKhamBenh));
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity)
+            );
+            var danhSachDichVu = await LayDichVuXetNghiem();
+            ViewBag.DanhSachDichVu = new SelectList(danhSachDichVu, "MaDichVu", "TenDichVu");
+
+            return View(benhNhan);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LuuThongTinKham(IFormCollection form)
+        {
+            string TrieuChung = form["TrieuChung"];
+            string ChanDoanCuoiCung = form["ChanDoanCuoiCung"];
+            string maKhoa = form["MaKhoaBS"];
+
+            if (string.IsNullOrWhiteSpace(TrieuChung) ||
+                string.IsNullOrWhiteSpace(ChanDoanCuoiCung) ||
+                string.IsNullOrWhiteSpace(maKhoa))
+            {
+                return Json(new { success = false, message = "Vui lòng nhập đủ thông tin." });
+            }
+
+            var maKhamBenhClaim = User.FindFirst("MaKhamBenh")?.Value;
+            if (string.IsNullOrWhiteSpace(maKhamBenhClaim) || !int.TryParse(maKhamBenhClaim, out int maKhamBenh))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã khám bệnh." });
+            }
+
+            try
+            {
+                var connStr = await _connProvider.GetDataConnectionStringAsync();
+                using var context = new SqlConnection(connStr);
+                await context.OpenAsync();
+
+                using var command = new SqlCommand("sp_UpdateKhamBenh_MaHoa", context);
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@ma", maKhoa);
+                command.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
+                command.Parameters.AddWithValue("@trieuChung", TrieuChung);
+                command.Parameters.AddWithValue("@chanDoanCuoiCung", ChanDoanCuoiCung);
+
+                await command.ExecuteNonQueryAsync();
+                return Json(new { success = true, message = "Khám bệnh thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> LuuToaThuoc(IFormCollection form)
+        {
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var context = new SqlConnection(connStr);
+            await context.OpenAsync();
+
+            using var command = new SqlCommand("sp_ThemToaThuoc_MaHoa", context)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Lấy mã khám bệnh từ claim
+            var maKhamBenhClaim = User.FindFirst("MaKhamBenh")?.Value;
+            if (string.IsNullOrWhiteSpace(maKhamBenhClaim) || !int.TryParse(maKhamBenhClaim, out int maKhamBenh))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã khám bệnh hợp lệ." });
+            }
+
+            string ma = form["MaKhoaBS"];
+
+            List<string> tenThuocList = new();
+            List<string> soLuongList = new();
+            List<string> lieuDungList = new();
+            List<string> ghiChuList = new();
+
+            // ✅ Lấy tất cả key có tên bắt đầu bằng "TenThuoc_"
+            foreach (var key in form.Keys)
+            {
+                if (key.StartsWith("TenThuoc_"))
+                {
+                    var index = key.Split('_')[1];
+                    string ten = form[key];
+                    string sl = form[$"SoLuong_{index}"];
+                    string lieu = form[$"LieuDung_{index}"];
+                    string ghiChu = form[$"GhiChu_{index}"];
+
+                    if (string.IsNullOrWhiteSpace(ten) || string.IsNullOrWhiteSpace(sl))
+                        continue;
+
+                    tenThuocList.Add(ten.Trim());
+                    soLuongList.Add(sl.Trim());
+                    lieuDungList.Add(lieu?.Trim() ?? "");
+                    ghiChuList.Add(ghiChu?.Trim() ?? "");
+                }
+            }
+
+            if (tenThuocList.Count == 0)
+            {
+                return Json(new { success = false, message = "Chưa có thuốc nào được nhập." });
+            }
+
+            if (string.IsNullOrWhiteSpace(ma))
+            {
+                return Json(new { success = false, message = "Phải nhập khóa xác nhận." });
+            }
+
+            command.Parameters.AddWithValue("@ma", ma);
+            command.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
+            command.Parameters.AddWithValue("@tenThuocList", string.Join(",", tenThuocList));
+            command.Parameters.AddWithValue("@soLuongList", string.Join(",", soLuongList));
+            command.Parameters.AddWithValue("@lieuDungList", string.Join(",", lieuDungList));
+            command.Parameters.AddWithValue("@ghiChuList", string.Join(",", ghiChuList));
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+                return Json(new { success = true, message = "Kê toa thuốc thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi lưu toa thuốc: " + ex.Message });
+            }
+        }
+
+
+        private async Task<List<ViewXetNghiemB>> LayDichVuXetNghiem()
+        {
+            var result = new List<ViewXetNghiemB>();
+
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+
+            using var cmd = new SqlCommand("sp_LayDanhSachXetNghiem", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(new ViewXetNghiemB
+                {
+                    MaDichVu = Convert.ToInt32(reader["maDichVu"]),
+                    TenDichVu = reader["tenDichVu"].ToString()
+                });
+            }
+
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LuuXetNghiem(IFormCollection form)
+        {
+            var maKhamBenhClaim = User.FindFirst("MaKhamBenh")?.Value;
+            if (string.IsNullOrWhiteSpace(maKhamBenhClaim) || !int.TryParse(maKhamBenhClaim, out int maKhamBenh))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã khám bệnh." });
+            }
+
+            string maBSYeuCau = User.FindFirst("MaNhanVien")?.Value;
+            if (string.IsNullOrWhiteSpace(maBSYeuCau))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã bác sĩ." });
+            }
+
+            string maKhoa = form["MaKhoaBS"];
+            string ghiChu = form["GhiChuXet"];
+            string maDichVuStr = form["MaDichVu"];
+
+            if (string.IsNullOrWhiteSpace(maDichVuStr) || !int.TryParse(maDichVuStr, out int maDichVu))
+            {
+                return Json(new { success = false, message = "Bạn phải chọn dịch vụ xét nghiệm." });
+            }
+
+            if (string.IsNullOrWhiteSpace(ghiChu))
+            {
+                return Json(new { success = false, message = "Bạn phải nhập ghi chú." });
+            }
+
+            if (string.IsNullOrWhiteSpace(maKhoa))
+            {
+                return Json(new { success = false, message = "Bạn phải nhập khóa xác nhận." });
+            }
+
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+
+            using var cmd = new SqlCommand("sp_ThemChiTietKhamBenh", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            cmd.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
+            cmd.Parameters.AddWithValue("@maBSYeuCau", maBSYeuCau);
+            cmd.Parameters.AddWithValue("@maDichVu", maDichVu);
+            cmd.Parameters.AddWithValue("@ghiChu", ghiChu ?? "");
+            cmd.Parameters.AddWithValue("@ma", maKhoa ?? "");
+
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+                return Json(new { success = true, message = "Đã thêm thông tin xét nghiệm thành công." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi thêm thông tin xét nghiệm: " + ex.Message });
+            }
+        }
+
+
+    }
+}

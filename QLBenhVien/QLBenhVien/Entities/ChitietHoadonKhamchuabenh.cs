@@ -9,11 +9,11 @@ public partial class ChitietHoadonKhamchuabenh
 
     public int MaHoaDon { get; set; }
 
-    public int MaDichVu { get; set; }
+    public int? MaChiTietKham { get; set; }
 
-    public decimal DonGia { get; set; }
+    public decimal? DonGia { get; set; }
 
-    public virtual Dichvu MaDichVuNavigation { get; set; } = null!;
+    public virtual ChitietKhambenh? MaChiTietKhamNavigation { get; set; }
 
     public virtual Hoadon MaHoaDonNavigation { get; set; } = null!;
 }

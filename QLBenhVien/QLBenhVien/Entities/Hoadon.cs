@@ -9,11 +9,13 @@ public partial class Hoadon
 
     public DateTime? NgayLap { get; set; }
 
-    public decimal TongTien { get; set; }
+    public decimal? SoTienNhan { get; set; }
+
+    public decimal? SoTienThoi { get; set; }
 
     public string? LoaiHoaDon { get; set; }
 
-    public int MaKhamBenh { get; set; }
+    public int? MaKhamBenh { get; set; }
 
     public string? ThanhToan { get; set; }
 
@@ -23,7 +25,7 @@ public partial class Hoadon
 
     public virtual ICollection<ChitietHoadonThuoc> ChitietHoadonThuocs { get; set; } = new List<ChitietHoadonThuoc>();
 
-    public virtual Khambenh MaKhamBenhNavigation { get; set; } = null!;
+    public virtual Khambenh? MaKhamBenhNavigation { get; set; }
 
     public virtual Nhanvien NhanVienThuNavigation { get; set; } = null!;
 }

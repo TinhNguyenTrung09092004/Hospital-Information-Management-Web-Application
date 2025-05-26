@@ -11,21 +11,17 @@ namespace QLBenhVien.Controllers
     [Authorize]
     public class KhoaController : Controller
     {
+        private readonly DynamicConnectionProvider _connProvider;
+
+        public KhoaController(DynamicConnectionProvider connProvider)
+        {
+            _connProvider = connProvider;
+        }
+
         public async Task<IActionResult> Index(int? page)
         {
-            var dbUser = User.FindFirst("DBUser")?.Value;
-            var dbPass = User.FindFirst("DBPass")?.Value;
-            var dbName = User.FindFirst("DBName")?.Value;
-            var server = User.FindFirst("Server")?.Value;
-
-            if (string.IsNullOrEmpty(dbUser) || string.IsNullOrEmpty(dbPass) ||
-                string.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(server))
-            {
-                return Unauthorized();
-            }
-
-            var connectionString = $"Server={server};Database={dbName};User ID={dbUser};Password={dbPass};TrustServerCertificate=True;";
-            using var context = QlbenhVienContextFactory.Create(connectionString);
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var context = QlbenhVienContextFactory.Create(connStr);
 
             var allKhoas = await context.Khoas
                 .FromSqlRaw("EXEC sp_XemKhoa")
@@ -35,7 +31,6 @@ namespace QLBenhVien.Controllers
             int pageNumber = page ?? 1;
 
             var pagedList = allKhoas.ToPagedList(pageNumber, pageSize);
-
             return View(pagedList);
         }
     }

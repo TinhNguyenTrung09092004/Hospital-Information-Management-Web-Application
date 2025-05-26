@@ -17,7 +17,7 @@
 </head>
 <body>
 
-    <div class="container ">
+    <div class="container">
         <div class="bg-form">
             <div class="bg-white">
                 <div class="row">
@@ -41,16 +41,28 @@
                             <button type="submit">Đăng nhập</button>
                         </form>
                     </div>
-                  
                 </div>
             </div>
         </div>
-        
     </div>
-    
+
+    @if (ViewBag.InvalidLogin != null && (bool)ViewBag.InvalidLogin)
+    {
+        <script>
+            alert("Sai tên đăng nhập hoặc mật khẩu.");
+        </script>
+    }
+    @if (TempData["NoSchedule"] != null)
+    {
+        <script>
+            alert("Không có lịch làm hôm nay!");
+        </script>
+    }
+
     @section Scripts {
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
     }
 </body>
+</html>

@@ -9,15 +9,13 @@ public partial class ChitietToathuoc
 
     public int MaToaThuoc { get; set; }
 
-    public string MaThuoc { get; set; } = null!;
+    public byte[]? TenThuoc { get; set; }
 
     public int SoLuong { get; set; }
 
     public string? LieuDung { get; set; }
 
-    public string? GhiChu { get; set; }
-
-    public virtual Thuoc MaThuocNavigation { get; set; } = null!;
+    public byte[]? GhiChu { get; set; }
 
     public virtual Toathuoc MaToaThuocNavigation { get; set; } = null!;
 }

@@ -11,5 +11,7 @@ public partial class Khoa
 
     public virtual ICollection<Bacsi> Bacsis { get; set; } = new List<Bacsi>();
 
+    public virtual ICollection<ChitietKhambenh> ChitietKhambenhs { get; set; } = new List<ChitietKhambenh>();
+
     public virtual ICollection<Phongkham> Phongkhams { get; set; } = new List<Phongkham>();
 }

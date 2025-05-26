@@ -32,5 +32,11 @@ namespace QLBenhVien.Services
             var secret = await _client.GetSecretAsync(name);
             return secret.Value.Value;
         }
+
+        public async Task SetSecretAsync(string name, string value)
+        {
+            await _client.SetSecretAsync(name, value);
+        }
+
     }
 }
