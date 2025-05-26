@@ -61,6 +61,43 @@ namespace QLBenhVien.Controllers
             var account = result[0];
 
             string dataConnStr = await _connProvider.GetDataConnectionStringAsync();
+            
+            //if (account.TypeID == "1" || account.TypeID == "2" || account.TypeID == "3" || account.TypeID == "5"
+            //    || account.TypeID == "4")
+            //{
+            //    using (var connection = new SqlConnection(dataConnStr))
+            //    using (var command = new SqlCommand("sp_KiemTraLichLamViec", connection))
+            //    {
+            //        command.CommandType = CommandType.StoredProcedure;
+            //        command.Parameters.AddWithValue("@maNhanVien", account.MaNhanVien ?? "");
+
+            //        await connection.OpenAsync();
+
+            //        using (var reader = await command.ExecuteReaderAsync())
+            //        {
+            //            bool hasValidSchedule = false;
+            //            TimeSpan now = DateTime.Now.TimeOfDay;
+
+            //            while (await reader.ReadAsync())
+            //            {
+            //                TimeSpan gioBatDau = reader.GetTimeSpan(reader.GetOrdinal("gioBatDau"));
+            //                TimeSpan gioKetThuc = reader.GetTimeSpan(reader.GetOrdinal("gioKetThuc"));
+
+            //                if (now >= gioBatDau && now <= gioKetThuc)
+            //                {
+            //                    hasValidSchedule = true;
+            //                    break;
+            //                }
+            //            }
+
+            //            if (!hasValidSchedule)
+            //            {
+            //                TempData["NoSchedule"] = "Không có lịch làm việc hôm nay hoặc đã ngoài giờ.";
+            //                return RedirectToAction("Login");
+            //            }
+            //        }
+            //    }
+            //}
 
             string? maPhongKham = null;
             if (account.TypeID == "1")
@@ -83,12 +120,6 @@ namespace QLBenhVien.Controllers
 
                     maPhongKham = outputParam.Value?.ToString();
                 }
-
-                if (string.IsNullOrEmpty(maPhongKham))
-                {
-                    TempData["NoSchedule"] = true;
-                    return RedirectToAction("Login");
-                }
             }
 
             var claims = new List<Claim>
@@ -98,8 +129,6 @@ namespace QLBenhVien.Controllers
                 new Claim("MaNhanVien", account.MaNhanVien ?? "")
             };
 
-            if (account.TypeID == "1")
-                claims.Add(new Claim("RequireDoctorKey", "true"));
 
             if (!string.IsNullOrEmpty(maPhongKham))
                 claims.Add(new Claim("MaPhongKham", maPhongKham));

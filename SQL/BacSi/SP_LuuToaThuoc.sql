@@ -1,7 +1,8 @@
 ﻿Use QLBenhVien
 GO
 CREATE OR ALTER PROCEDURE sp_ThemToaThuoc_MaHoa
-    @ma NVARCHAR(100),
+    @ma NVARCHAR(100),           
+    @BSCert NVARCHAR(100),        
     @maKhamBenh INT,
     @tenThuocList NVARCHAR(MAX),
     @soLuongList NVARCHAR(MAX),
@@ -51,11 +52,10 @@ BEGIN
     DECLARE @sqlOpen NVARCHAR(MAX), @sqlClose NVARCHAR(MAX);
     SET @sqlOpen = '
     OPEN SYMMETRIC KEY [' + @ma + ']
-    DECRYPTION BY CERTIFICATE BSCert
+    DECRYPTION BY CERTIFICATE [' + @BSCert + ']
     WITH PASSWORD = ''Cert_P@$$wOrd'';
     ';
     EXEC (@sqlOpen);
-
 
     DECLARE @Ten NVARCHAR(MAX), @SL INT, @LD NVARCHAR(100), @GC NVARCHAR(MAX);
 
@@ -87,9 +87,8 @@ BEGIN
     EXEC (@sqlClose);
 END;
 GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].sp_ThemToaThuoc_MaHoa TO userBenhVien
-    AS [dbo];
+	GRANT EXECUTE ON OBJECT::[dbo].sp_ThemToaThuoc_MaHoa TO userBenhVien AS [dbo];
 GO
+
 
 --drop proc sp_ThemToaThuoc_MaHoa

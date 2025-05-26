@@ -76,16 +76,13 @@
 
                 const maDichVuEl = mainForm.querySelector("[name='MaDichVu']");
                 const ghiChuEl = mainForm.querySelector("[name='GhiChuXet']");
-                const maKhoaEl = mainForm.querySelector("[name='MaKhoaBS']");
 
                 const maDichVu = maDichVuEl?.value;
                 const ghiChu = ghiChuEl?.value;
-                const maKhoa = maKhoaEl?.value;
 
                 const formData = new FormData();
                 formData.append("MaDichVu", maDichVu);
                 formData.append("GhiChuXet", ghiChu);
-                formData.append("MaKhoaBS", maKhoa);
 
                 fetch(postUrl, {
                     method: "POST",
@@ -103,7 +100,6 @@
                                 maDichVuEl.selectedIndex = 0;
                             }
                             if (ghiChuEl) ghiChuEl.value = "";
-                            if (maKhoaEl) maKhoaEl.value = "";
 
                             btnNextPatient?.removeAttribute("disabled");
 
@@ -130,12 +126,11 @@
                 e.preventDefault();
                 const trieuChung = mainForm.querySelector("[name='TrieuChung']")?.value;
                 const chanDoan = mainForm.querySelector("[name='ChanDoanCuoiCung']")?.value;
-                const maKhoa = mainForm.querySelector("[name='MaKhoaBS']")?.value;
 
                 const formData = new FormData();
                 formData.append("TrieuChung", trieuChung);
                 formData.append("ChanDoanCuoiCung", chanDoan);
-                formData.append("MaKhoaBS", maKhoa);
+             
 
                 fetch(postUrl, {
                     method: "POST",
@@ -171,9 +166,7 @@
             } else if (currentAction === "ketoa") {
                 e.preventDefault();
 
-                const maKhoa = mainForm.querySelector("[name='MaKhoaBS']")?.value;
                 const formData = new FormData();
-                formData.append("MaKhoaBS", maKhoa);
 
                 // ✅ Tự động lấy tất cả các thuốc đã nhập
                 for (let i = 1; i <= 10; i++) {

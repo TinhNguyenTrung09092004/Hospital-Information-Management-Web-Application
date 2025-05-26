@@ -1,7 +1,8 @@
 Use QLBenhVien
 Go
 CREATE OR ALTER PROCEDURE sp_UpdateKhamBenh_MaHoa
-    @ma NVARCHAR(100),
+    @ma NVARCHAR(100),       
+    @BSCert NVARCHAR(100),
     @maKhamBenh INT,
     @trieuChung NVARCHAR(MAX),
     @chanDoanCuoiCung NVARCHAR(MAX)
@@ -14,7 +15,7 @@ BEGIN
 
     SET @sql = '
     OPEN SYMMETRIC KEY [' + @ma + ']
-    DECRYPTION BY CERTIFICATE BSCert
+    DECRYPTION BY CERTIFICATE [' + @BSCert + ']
     WITH PASSWORD = ''Cert_P@$$wOrd'';
 
     UPDATE KHAMBENH
@@ -41,7 +42,7 @@ BEGIN
         @cd = @chanDoanCuoiCung,
         @mkb = @maKhamBenh;
 
-	UPDATE DANHSACH_BENHNHAN
+    UPDATE DANHSACH_BENHNHAN
     SET TinhTrang = '1'
     WHERE maKhamBenh = @maKhamBenh;
 
@@ -50,9 +51,7 @@ BEGIN
     WHERE maKhamBenh = @maKhamBenh;
 END;
 GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].sp_UpdateKhamBenh_MaHoa TO userBenhVien
-    AS [dbo];
+	GRANT EXECUTE ON OBJECT::[dbo].sp_UpdateKhamBenh_MaHoa TO userBenhVien AS [dbo];
 GO
 
 --drop proc sp_UpdateKhamBenh_MaHoa

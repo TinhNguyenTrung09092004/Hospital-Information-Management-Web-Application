@@ -10,6 +10,8 @@ using QLBenhVien.Services;
 using System.Security.Claims;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Azure.Security.KeyVault.Secrets;
+using Azure;
 
 namespace QLBenhVien.Controllers
 {
@@ -17,11 +19,16 @@ namespace QLBenhVien.Controllers
     public class BacSiController : Controller
     {
         private readonly DynamicConnectionProvider _connProvider;
+        private readonly KeyVaultService _keyVaultService;
 
-        public BacSiController(DynamicConnectionProvider connProvider)
+        public BacSiController(
+            DynamicConnectionProvider connProvider,
+            KeyVaultService keyVaultService)
         {
             _connProvider = connProvider;
+            _keyVaultService = keyVaultService;
         }
+
 
         public async Task<IActionResult> Index()
         {
@@ -60,17 +67,13 @@ namespace QLBenhVien.Controllers
             return View(benhNhan);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> LuuThongTinKham(IFormCollection form)
         {
-            string TrieuChung = form["TrieuChung"];
-            string ChanDoanCuoiCung = form["ChanDoanCuoiCung"];
-            string maKhoa = form["MaKhoaBS"];
+            string trieuChung = form["TrieuChung"];
+            string chanDoan = form["ChanDoanCuoiCung"];
 
-            if (string.IsNullOrWhiteSpace(TrieuChung) ||
-                string.IsNullOrWhiteSpace(ChanDoanCuoiCung) ||
-                string.IsNullOrWhiteSpace(maKhoa))
+            if (string.IsNullOrWhiteSpace(trieuChung) || string.IsNullOrWhiteSpace(chanDoan))
             {
                 return Json(new { success = false, message = "Vui lòng nhập đủ thông tin." });
             }
@@ -79,6 +82,29 @@ namespace QLBenhVien.Controllers
             if (string.IsNullOrWhiteSpace(maKhamBenhClaim) || !int.TryParse(maKhamBenhClaim, out int maKhamBenh))
             {
                 return Json(new { success = false, message = "Không tìm thấy mã khám bệnh." });
+            }
+
+            string username = User.Identity?.Name ?? "";
+            string secretName = $"{username}-key";
+
+            string ma, BSCert;
+            try
+            {
+                ma = await _keyVaultService.GetSecretAsync(secretName);
+                BSCert = await _keyVaultService.GetSecretAsync("CertificateBS");
+
+                if (string.IsNullOrWhiteSpace(ma))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Chưa có khóa được tạo cho người dùng '{username}'. Vui lòng tạo trước khi tiếp tục."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi truy cập Key Vault: {ex.Message}" });
             }
 
             try
@@ -90,48 +116,56 @@ namespace QLBenhVien.Controllers
                 using var command = new SqlCommand("sp_UpdateKhamBenh_MaHoa", context);
                 command.CommandType = CommandType.StoredProcedure;
 
-                command.Parameters.AddWithValue("@ma", maKhoa);
+                command.Parameters.AddWithValue("@ma", ma);
+                command.Parameters.AddWithValue("@BSCert", BSCert);
                 command.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
-                command.Parameters.AddWithValue("@trieuChung", TrieuChung);
-                command.Parameters.AddWithValue("@chanDoanCuoiCung", ChanDoanCuoiCung);
+                command.Parameters.AddWithValue("@trieuChung", trieuChung);
+                command.Parameters.AddWithValue("@chanDoanCuoiCung", chanDoan);
 
                 await command.ExecuteNonQueryAsync();
                 return Json(new { success = true, message = "Khám bệnh thành công." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+                return Json(new { success = false, message = "Lỗi khi cập nhật thông tin khám: " + ex.Message });
             }
         }
+
 
 
         [HttpPost]
         public async Task<IActionResult> LuuToaThuoc(IFormCollection form)
         {
-            var connStr = await _connProvider.GetDataConnectionStringAsync();
-            using var context = new SqlConnection(connStr);
-            await context.OpenAsync();
-
-            using var command = new SqlCommand("sp_ThemToaThuoc_MaHoa", context)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-
-            // Lấy mã khám bệnh từ claim
             var maKhamBenhClaim = User.FindFirst("MaKhamBenh")?.Value;
             if (string.IsNullOrWhiteSpace(maKhamBenhClaim) || !int.TryParse(maKhamBenhClaim, out int maKhamBenh))
             {
                 return Json(new { success = false, message = "Không tìm thấy mã khám bệnh hợp lệ." });
             }
 
-            string ma = form["MaKhoaBS"];
+            string username = User.Identity?.Name ?? "";
+            string secretName = $"{username}-key";
+
+            string ma, BSCert;
+            try
+            {
+                ma = await _keyVaultService.GetSecretAsync(secretName);
+                BSCert = await _keyVaultService.GetSecretAsync("CertificateBS");
+
+                if (string.IsNullOrWhiteSpace(ma))
+                {
+                    return Json(new { success = false, message = $"Chưa có khóa được tạo cho người dùng '{username}'." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi truy cập Key Vault: {ex.Message}" });
+            }
 
             List<string> tenThuocList = new();
             List<string> soLuongList = new();
             List<string> lieuDungList = new();
             List<string> ghiChuList = new();
 
-            // ✅ Lấy tất cả key có tên bắt đầu bằng "TenThuoc_"
             foreach (var key in form.Keys)
             {
                 if (key.StartsWith("TenThuoc_"))
@@ -157,12 +191,17 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Chưa có thuốc nào được nhập." });
             }
 
-            if (string.IsNullOrWhiteSpace(ma))
+            var connStr = await _connProvider.GetDataConnectionStringAsync();
+            using var context = new SqlConnection(connStr);
+            await context.OpenAsync();
+
+            using var command = new SqlCommand("sp_ThemToaThuoc_MaHoa", context)
             {
-                return Json(new { success = false, message = "Phải nhập khóa xác nhận." });
-            }
+                CommandType = CommandType.StoredProcedure
+            };
 
             command.Parameters.AddWithValue("@ma", ma);
+            command.Parameters.AddWithValue("@BSCert", BSCert);
             command.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
             command.Parameters.AddWithValue("@tenThuocList", string.Join(",", tenThuocList));
             command.Parameters.AddWithValue("@soLuongList", string.Join(",", soLuongList));
@@ -220,7 +259,9 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Không tìm thấy mã bác sĩ." });
             }
 
-            string maKhoa = form["MaKhoaBS"];
+            string username = User.Identity?.Name ?? "";
+            string secretName = $"{username}-key";
+
             string ghiChu = form["GhiChuXet"];
             string maDichVuStr = form["MaDichVu"];
 
@@ -234,9 +275,19 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Bạn phải nhập ghi chú." });
             }
 
-            if (string.IsNullOrWhiteSpace(maKhoa))
+            string ma;
+            string BSCert;
+
+
+            ma = await _keyVaultService.GetSecretAsync(secretName);
+            BSCert = await _keyVaultService.GetSecretAsync("CertificateBS");
+            if (string.IsNullOrWhiteSpace(ma))
             {
-                return Json(new { success = false, message = "Bạn phải nhập khóa xác nhận." });
+                return Json(new
+                {
+                    success = false,
+                    message = $"Chưa có khóa được tạo cho người dùng '{username}'. Vui lòng tạo trước khi tiếp tục."
+                });
             }
 
             var connStr = await _connProvider.GetDataConnectionStringAsync();
@@ -252,7 +303,8 @@ namespace QLBenhVien.Controllers
             cmd.Parameters.AddWithValue("@maBSYeuCau", maBSYeuCau);
             cmd.Parameters.AddWithValue("@maDichVu", maDichVu);
             cmd.Parameters.AddWithValue("@ghiChu", ghiChu ?? "");
-            cmd.Parameters.AddWithValue("@ma", maKhoa ?? "");
+            cmd.Parameters.AddWithValue("@ma", ma);
+            cmd.Parameters.AddWithValue("@BSCert", BSCert);
 
             try
             {
@@ -264,7 +316,6 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Lỗi khi thêm thông tin xét nghiệm: " + ex.Message });
             }
         }
-
 
     }
 }
