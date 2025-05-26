@@ -32,11 +32,11 @@ namespace QLBenhVien.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 🔐 Kết nối tới QLBenhVien_ACCOUNT
+            // Connect QLBenhVien_ACCOUNT
             string accountConnStr = await _connProvider.GetAccountConnectionStringAsync();
             using var accountContext = QlbenhVienAccountContextFactory.Create(accountConnStr);
 
-            // Hash mật khẩu
+            // Hash
             using var sha256 = System.Security.Cryptography.SHA256.Create();
             var passwordBytes = System.Text.Encoding.UTF8.GetBytes(model.Password);
             var passwordHash = sha256.ComputeHash(passwordBytes);
