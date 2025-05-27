@@ -13,17 +13,16 @@
                 <ul class="submenu">
                     <li><a id="xemTaiKhoan" asp-controller="AccountManager" asp-action="Index">Xem Tài Khoản</a></li>
                     <li><a id="themTaiKhoan" asp-controller="AccountManager" asp-action="Create">Thêm Tài Khoản</a></li>
-                    <li><a id="xoaTaiKhoan" asp-controller="AccountManager" asp-action="Delete">Xóa Tài Khoản</a></li>
+                    <li><a id="xoaTaiKhoan" asp-controller="Home" asp-action="Index">Xóa Tài Khoản</a></li>
                 </ul>
             </li>
 
             <li class="dropdown" id="modifyPermission">
                 <a href="#">Quản lý Quyền ▸</a>
                 <ul class="submenu">
-                    <li><a id="xemQuyen" asp-controller="Permission" asp-action="Index">Xem Quyền</a></li>
-                    <li><a id="themQuyen" asp-controller="Permission" asp-action="Create">Thêm Quyền</a></li>
-                    <li><a id="xoaQuyen" asp-controller="Permission" asp-action="Delete">Xóa Quyền</a></li>
-                    <li><a id="suaQuyen" asp-controller="Permission" asp-action="Edit">Sửa Quyền</a></li>
+                    <li><a id="xemQuyen" asp-controller="Home" asp-action="Index">Xem Quyền</a></li>
+                    <li><a id="themQuyen" asp-controller="Home" asp-action="Index">Thêm Quyền</a></li>
+                    <li><a id="xoaQuyen" asp-controller="Home" asp-action="Index">Xóa Quyền</a></li>
                 </ul>
             </li>
             <li class="dropdown" id="modifyAccountPermission">
@@ -38,7 +37,7 @@
                 <a href="#">Quản lý khóa tài khoản▸</a>
                 <ul class="submenu">
                     <li><a id="themKhoa" asp-controller="AccountManager" asp-action="AddKey">Thêm khóa Tài Khoản</a></li>
-                    <li><a id="xoaKhoa" asp-controller="AccountManager" asp-action="DeleteKey">Xóa khóa Tài Khoản</a></li>
+                    <li><a id="xoaKhoa" asp-controller="Home" asp-action="Index">Xóa khóa Tài Khoản</a></li>
                 </ul>
             </li>
         }
@@ -103,10 +102,9 @@
             <li class="dropdown" id="modifyDonGiaDichVu">
                 <a href="#">Quản lý Đơn giá Dịch vụ ▸</a>
                 <ul class="submenu">
-                    <li><a asp-controller="DonGiaDichVu" asp-action="Index">Xem Đơn giá Dịch vụ</a></li>
-                    <li><a asp-controller="DonGiaDichVu" asp-action="Create">Thêm Đơn giá Dịch vụ</a></li>
-                    <li><a asp-controller="DonGiaDichVu" asp-action="Edit">Sửa Đơn giá Dịch vụ</a></li>
-                    <li><a asp-controller="DonGiaDichVu" asp-action="Delete">Xóa Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="QLTaiVu" asp-action="XemDonGiaDV">Xem Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="QLTaiVu" asp-action="ThemDonGiaDV">Thêm Đơn giá Dịch vụ</a></li>
+                    <li><a asp-controller="QLTaiVu" asp-action="XoaDonGiaDV">Xóa Đơn giá Dịch vụ</a></li>
                 </ul>
             </li>
         }
@@ -116,10 +114,9 @@
             <li class="dropdown" id="modifyDonGiaThuoc">
                 <a href="#">Quản lý Đơn giá Thuốc ▸</a>
                 <ul class="submenu">
-                    <li><a asp-controller="DonGiaThuoc" asp-action="Index">Xem Đơn giá Thuốc</a></li>
-                    <li><a asp-controller="DonGiaThuoc" asp-action="Create">Thêm Đơn giá Thuốc</a></li>
-                    <li><a asp-controller="DonGiaThuoc" asp-action="Edit">Sửa Đơn giá Thuốc</a></li>
-                    <li><a asp-controller="DonGiaThuoc" asp-action="Delete">Xóa Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xem Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Thêm Đơn giá Thuốc</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xóa Đơn giá Thuốc</a></li>
                 </ul>
             </li>
         }
@@ -127,28 +124,28 @@
         @if (permissionIds.Contains("11"))
         {
             <li id="viewHoaDonThuoc">
-                <a asp-controller="HoaDon" asp-action="DanhSachThuoc">Xem Hóa đơn Thuốc</a>
+                <a asp-controller="Home" asp-action="Index">Xem Hóa đơn Thuốc</a>
             </li>
         }
 
         @if (permissionIds.Contains("12"))
         {
             <li id="viewHoaDonKCB">
-                <a asp-controller="HoaDon" asp-action="DanhSachKCB">Xem Hóa đơn Khám chữa bệnh</a>
+                <a asp-controller="Home" asp-action="Index">Xem Hóa đơn Khám chữa bệnh</a>
             </li>
         }
 
         @if (permissionIds.Contains("13"))
         {
             <li id="viewBacSi">
-                <a asp-controller="BacSi" asp-action="Index">Xem Danh sách Bác sĩ</a>
+                <a asp-controller="Home" asp-action="Index">Xem Danh sách Bác sĩ</a>
             </li>
         }
 
         @if (permissionIds.Contains("14"))
         {
             <li id="viewNhanVien">
-                <a asp-controller="NhanVien" asp-action="Index">Xem Danh sách Nhân viên</a>
+                <a asp-controller="Home" asp-action="Index">Xem Danh sách Nhân viên</a>
             </li>
         }
 
@@ -171,10 +168,10 @@
             <li class="dropdown" id="modifyHoaDonKCB">
                 <a href="#">Quản lý Hóa đơn KCB ▸</a>
                 <ul class="submenu">
-                    <li><a asp-controller="HoaDonKCB" asp-action="Index">Xem Hóa đơn KCB</a></li>
-                    <li><a asp-controller="HoaDonKCB" asp-action="Create">Thêm Hóa đơn KCB</a></li>
-                    <li><a asp-controller="HoaDonKCB" asp-action="Edit">Sửa Hóa đơn KCB</a></li>
-                    <li><a asp-controller="HoaDonKCB" asp-action="Delete">Xóa Hóa đơn KCB</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xem Hóa đơn KCB</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Thêm Hóa đơn KCB</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Sửa Hóa đơn KCB</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xóa Hóa đơn KCB</a></li>
                 </ul>
             </li>
         }
@@ -188,7 +185,7 @@
         @if (permissionIds.Contains("21"))
         {
             <li id="viewBenhNhan">
-                <a asp-controller="" asp-action="">Xem bệnh nhân</a>
+                <a asp-controller="Home" asp-action="Index">Xem bệnh nhân</a>
             </li>
         }
         @if (permissionIds.Contains("22"))
@@ -200,21 +197,19 @@
         @if (permissionIds.Contains("23"))
         {
             <li id="viewDanhSachBenhNhan">
-                <a asp-controller="BacSi" asp-action="DanhSach">Xem danh sách bệnh nhân</a>
+                <a asp-controller="Home" asp-action="Index">Xem danh sách bệnh nhân</a>
             </li>
         }
-
-
 
         @if (permissionIds.Contains("6"))
         {
             <li class="dropdown" id="modifyLichLamViec">
                 <a href="#">Quản lý Lịch làm việc ▸</a>
                 <ul class="submenu">
-                    <li><a id="xemLichLamViec" asp-controller="LichLamViec" asp-action="Index">Xem Lịch làm việc</a></li>
-                    <li><a id="themLichLamViec" asp-controller="LichLamViec" asp-action="Create">Thêm Lịch làm việc</a></li>
-                    <li><a id="xoaLichLamViec" asp-controller="LichLamViec" asp-action="Delete">Xóa Lịch làm việc</a></li>
-                    <li><a id="suaLichLamViec" asp-controller="LichLamViec" asp-action="Edit">Sửa Lịch làm việc</a></li>
+                    <li><a id="xemLichLamViec" asp-controller="Home" asp-action="Index">Xem Lịch làm việc</a></li>
+                    <li><a id="themLichLamViec" asp-controller="Home" asp-action="Index">Thêm Lịch làm việc</a></li>
+                    <li><a id="xoaLichLamViec" asp-controller="Home" asp-action="Index">Xóa Lịch làm việc</a></li>
+                    <li><a id="suaLichLamViec" asp-controller="Home" asp-action="Index">Sửa Lịch làm việc</a></li>
                 </ul>
             </li>
         }
@@ -222,7 +217,7 @@
         @if (permissionIds.Contains("7"))
         {
             <li id="viewChamCong">
-                <a id="xemChamCong" asp-controller="ChamCong" asp-action="Index">Xem Chấm công</a>
+                <a id="xemChamCong" asp-controller="Home" asp-action="Index">Xem Chấm công</a>
             </li>
         }
 
@@ -230,7 +225,7 @@
         @if (permissionIds.Contains("8"))
         {
             <li id="viewLuong">
-                <a id="xemLuong" asp-controller="Luong" asp-action="Index">Xem Lương</a>
+                <a id="xemLuong" asp-controller="Home" asp-action="Index">Xem Lương</a>
             </li>
         }
 
@@ -239,10 +234,10 @@
             <li class="dropdown" id="modifyBenhNhan">
                 <a href="#">Quản lý Bệnh nhân ▸</a>
                 <ul class="submenu">
-                    <li><a asp-controller="BenhNhan" asp-action="Index">Xem Bệnh nhân</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xem Bệnh nhân</a></li>
                     <li><a asp-controller="BenhNhan" asp-action="Create">Thêm Bệnh nhân</a></li>
-                    <li><a asp-controller="BenhNhan" asp-action="Edit">Sửa Bệnh nhân</a></li>
-                    <li><a asp-controller="BenhNhan" asp-action="Delete">Xóa Bệnh nhân</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Sửa Bệnh nhân</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">Xóa Bệnh nhân</a></li>
                 </ul>
             </li>
         }

@@ -11,7 +11,7 @@ public partial class ChitietHoadonKhamchuabenh
 
     public int? MaChiTietKham { get; set; }
 
-    public decimal? DonGia { get; set; }
+    public byte[]? DonGia { get; set; }
 
     public virtual ChitietKhambenh? MaChiTietKhamNavigation { get; set; }
 

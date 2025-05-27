@@ -64,6 +64,8 @@ public partial class QlbenhVienContext : DbContext
 
     public virtual DbSet<ViewDieuPhoi> ViewDieuPhois { get; set; }
 
+    public virtual DbSet<ViewDonGiaDichVu> ViewDonGiaDichVus { get; set; }
+
     public virtual DbSet<ViewKhoa> ViewKhoas { get; set; }
 
     public virtual DbSet<ViewPhongKhamDp> ViewPhongKhamDps { get; set; }
@@ -73,19 +75,16 @@ public partial class QlbenhVienContext : DbContext
     public virtual DbSet<ViewThongTinNhanVien> ViewThongTinNhanViens { get; set; }
 
     public virtual DbSet<ViewXetNghiemB> ViewXetNghiemBs { get; set; }
-    public virtual DbSet<MaNhanVien> MaNhanViens { get; set; }
+    public virtual DbSet<DonGiaDichVuGiaiMa> DonGiaDichVuGiaiMas { get; set; }
+    public DbSet<MaNhanVien> MaNhanViens { get; set; }
+
 //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
 //        => optionsBuilder.UseSqlServer("Server=.; Database=QLBenhVien; Integrated Security=True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MaNhanVien>(entity =>
-        {
-            entity.HasNoKey();
-            entity.Property(e => e.MaNhanVienId).HasColumnName("maNhanVien");
-        });
-
+        modelBuilder.Entity<DonGiaDichVuGiaiMa>().HasNoKey();
         modelBuilder.Entity<Bacsi>(entity =>
         {
             entity.HasKey(e => e.MaBacSi).HasName("PK__BACSI__F48AA2379C1A4ADF");
@@ -169,37 +168,33 @@ public partial class QlbenhVienContext : DbContext
 
         modelBuilder.Entity<ChitietHoadonKhamchuabenh>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__CHITIET___3214EC27E47E29EE");
+            entity.HasKey(e => e.Id).HasName("PK__CHITIET___3214EC27693285B5");
 
             entity.ToTable("CHITIET_HOADON_KHAMCHUABENH");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DonGia)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("donGia");
+            entity.Property(e => e.DonGia).HasColumnName("donGia");
             entity.Property(e => e.MaChiTietKham).HasColumnName("maChiTietKham");
             entity.Property(e => e.MaHoaDon).HasColumnName("maHoaDon");
 
             entity.HasOne(d => d.MaChiTietKhamNavigation).WithMany(p => p.ChitietHoadonKhamchuabenhs)
                 .HasForeignKey(d => d.MaChiTietKham)
-                .HasConstraintName("FK__CHITIET_H__maChi__6CF8245B");
+                .HasConstraintName("FK__CHITIET_H__maChi__375B2DB9");
 
             entity.HasOne(d => d.MaHoaDonNavigation).WithMany(p => p.ChitietHoadonKhamchuabenhs)
                 .HasForeignKey(d => d.MaHoaDon)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIET_H__maHoa__6C040022");
+                .HasConstraintName("FK__CHITIET_H__maHoa__36670980");
         });
 
         modelBuilder.Entity<ChitietHoadonThuoc>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__CHITIET___3214EC278794D3CE");
+            entity.HasKey(e => e.Id).HasName("PK__CHITIET___3214EC27102B081C");
 
             entity.ToTable("CHITIET_HOADON_THUOC");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DonGia)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("donGia");
+            entity.Property(e => e.DonGia).HasColumnName("donGia");
             entity.Property(e => e.DonViTinh)
                 .HasMaxLength(20)
                 .HasColumnName("donViTinh");
@@ -213,12 +208,12 @@ public partial class QlbenhVienContext : DbContext
             entity.HasOne(d => d.MaHoaDonNavigation).WithMany(p => p.ChitietHoadonThuocs)
                 .HasForeignKey(d => d.MaHoaDon)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIET_H__soLuo__369C13AA");
+                .HasConstraintName("FK__CHITIET_H__soLuo__3296789C");
 
             entity.HasOne(d => d.MaThuocNavigation).WithMany(p => p.ChitietHoadonThuocs)
                 .HasForeignKey(d => d.MaThuoc)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CHITIET_H__maThu__379037E3");
+                .HasConstraintName("FK__CHITIET_H__maThu__338A9CD5");
         });
 
         modelBuilder.Entity<ChitietKhambenh>(entity =>
@@ -360,37 +355,33 @@ public partial class QlbenhVienContext : DbContext
 
         modelBuilder.Entity<DongiaDichvu>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__DONGIA_D__3214EC27096817D8");
+            entity.HasKey(e => e.Id).HasName("PK__DONGIA_D__3214EC2711AFC1A9");
 
             entity.ToTable("DONGIA_DICHVU");
 
-            entity.HasIndex(e => new { e.MaDichVu, e.NgayApDung }, "UQ__DONGIA_D__FFA8CB3895946F8F").IsUnique();
+            entity.HasIndex(e => new { e.MaDichVu, e.NgayApDung }, "UQ__DONGIA_D__FFA8CB38347EE286").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DonGia)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("donGia");
+            entity.Property(e => e.DonGia).HasColumnName("donGia");
             entity.Property(e => e.MaDichVu).HasColumnName("maDichVu");
             entity.Property(e => e.NgayApDung).HasColumnName("ngayApDung");
 
             entity.HasOne(d => d.MaDichVuNavigation).WithMany(p => p.DongiaDichvus)
                 .HasForeignKey(d => d.MaDichVu)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__DONGIA_DI__maDic__656C112C");
+                .HasConstraintName("FK__DONGIA_DI__maDic__0C70CFB4");
         });
 
         modelBuilder.Entity<DongiaThuoc>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__DONGIA_T__3214EC275AEFA127");
+            entity.HasKey(e => e.Id).HasName("PK__DONGIA_T__3214EC2777DFF92E");
 
             entity.ToTable("DONGIA_THUOC");
 
-            entity.HasIndex(e => new { e.MaThuoc, e.NgayApDung }, "UQ__DONGIA_T__560C3A519EEB9281").IsUnique();
+            entity.HasIndex(e => new { e.MaThuoc, e.NgayApDung }, "UQ__DONGIA_T__560C3A51F8FED441").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DonGia)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("donGia");
+            entity.Property(e => e.DonGia).HasColumnName("donGia");
             entity.Property(e => e.MaThuoc)
                 .HasMaxLength(10)
                 .IsUnicode(false)
@@ -400,7 +391,7 @@ public partial class QlbenhVienContext : DbContext
             entity.HasOne(d => d.MaThuocNavigation).WithMany(p => p.DongiaThuocs)
                 .HasForeignKey(d => d.MaThuoc)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__DONGIA_TH__maThu__6D0D32F4");
+                .HasConstraintName("FK__DONGIA_TH__maThu__10416098");
         });
 
         modelBuilder.Entity<Hoadon>(entity =>
@@ -752,6 +743,20 @@ public partial class QlbenhVienContext : DbContext
             entity.Property(e => e.TenKhoa)
                 .HasMaxLength(100)
                 .HasColumnName("tenKhoa");
+        });
+
+        modelBuilder.Entity<ViewDonGiaDichVu>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("viewDonGiaDichVu");
+
+            entity.Property(e => e.DonGia).HasColumnName("donGia");
+            entity.Property(e => e.MaDichVu).HasColumnName("maDichVu");
+            entity.Property(e => e.NgayApDung).HasColumnName("ngayApDung");
+            entity.Property(e => e.TenDichVu)
+                .HasMaxLength(100)
+                .HasColumnName("tenDichVu");
         });
 
         modelBuilder.Entity<ViewKhoa>(entity =>

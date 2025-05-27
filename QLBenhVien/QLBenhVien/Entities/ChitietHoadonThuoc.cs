@@ -11,7 +11,7 @@ public partial class ChitietHoadonThuoc
 
     public string MaThuoc { get; set; } = null!;
 
-    public decimal DonGia { get; set; }
+    public byte[]? DonGia { get; set; }
 
     public string? DonViTinh { get; set; }
 

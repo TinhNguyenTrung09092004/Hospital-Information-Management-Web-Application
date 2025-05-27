@@ -14,6 +14,8 @@ GO
 GO
 --drop view viewTaiKhoan
 
+Use QLBenhVien_ACCOUNT 
+go
 CREATE OR ALTER PROCEDURE sp_CheckKeyAccount
 AS
 BEGIN
@@ -39,7 +41,7 @@ GRANT EXECUTE
     ON OBJECT::[dbo].sp_ViewTaiKhoan TO userAccountBenhVien
     AS [dbo];
 GO
-drop proc sp_ViewTaiKhoan
+--drop proc sp_ViewTaiKhoan
 
 use QLBenhVien
 CREATE OR ALTER VIEW viewThongTinNhanVien AS
@@ -69,6 +71,7 @@ GRANT EXECUTE
     AS [dbo];
 GO
 
+--drop proc sp_LayMaNV
 
 use QLBenhVien_ACCOUNT
 CREATE OR ALTER PROCEDURE sp_ThemTaiKhoanNV
@@ -88,10 +91,8 @@ BEGIN
     VALUES (@username, @passwordHash, @maNhanVien, @typeID);
 END
 GO
-
-GRANT EXECUTE ON OBJECT::sp_ThemTaiKhoanNV TO userAccountBenhVien;
+	GRANT EXECUTE ON OBJECT::sp_ThemTaiKhoanNV TO userAccountBenhVien;
 GO
-
 --drop proc sp_ThemTaiKhoanNV
 
 CREATE OR ALTER VIEW viewQuyen AS
@@ -111,7 +112,7 @@ BEGIN
    where permissionID <> '1'
 END
 GO
-GRANT EXECUTE ON OBJECT::sp_LayQuyen TO userAccountBenhVien;
+	GRANT EXECUTE ON OBJECT::sp_LayQuyen TO userAccountBenhVien;
 GO
 --drop proc sp_LayQuyen
 
@@ -135,8 +136,7 @@ BEGIN
    select * from viewQuyenTK
 END
 GO
-
-GRANT EXECUTE ON OBJECT::sp_LayQuyenTK TO userAccountBenhVien;
+	GRANT EXECUTE ON OBJECT::sp_LayQuyenTK TO userAccountBenhVien;
 GO
 --drop proc sp_LayQuyenTK
 

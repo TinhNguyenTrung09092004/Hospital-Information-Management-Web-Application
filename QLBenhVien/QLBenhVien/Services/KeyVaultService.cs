@@ -19,7 +19,7 @@ namespace QLBenhVien.Services
                 ExcludeAzurePowerShellCredential = true,
                 ExcludeAzureDeveloperCliCredential = true,
                 ExcludeWorkloadIdentityCredential = true,
-                ExcludeAzureCliCredential = false // ✅ Chỉ dùng CLI
+                ExcludeAzureCliCredential = false 
             };
 
             var credential = new DefaultAzureCredential(options);

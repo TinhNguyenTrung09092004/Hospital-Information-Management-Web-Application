@@ -28,7 +28,7 @@ namespace QLBenhVien.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var connStr = await _connProvider.GetAccountConnectionStringAsync(); 
+            var connStr = await _connProvider.GetAccountConnectionStringAsync();
             using var context = QlbenhVienAccountContextFactory.Create(connStr);
 
             var accounts = await context.ViewTaiKhoans
@@ -106,7 +106,7 @@ namespace QLBenhVien.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult>AddKey()
+        public async Task<IActionResult> AddKey()
         {
             var connStr = await _connProvider.GetAccountConnectionStringAsync();
             using var context = QlbenhVienAccountContextFactory.Create(connStr);

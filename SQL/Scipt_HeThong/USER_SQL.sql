@@ -8,3 +8,5 @@ USE QLBenhVien_ACCOUNT;
 GO
 CREATE USER userAccountBenhVien FOR LOGIN userAccountBenhVien;
 
+
+

@@ -168,7 +168,6 @@
 
                 const formData = new FormData();
 
-                // ✅ Tự động lấy tất cả các thuốc đã nhập
                 for (let i = 1; i <= 10; i++) {
                     const ten = mainForm.querySelector(`[name='TenThuoc_${i}']`)?.value;
                     const sl = mainForm.querySelector(`[name='SoLuong_${i}']`)?.value;
@@ -192,18 +191,18 @@
                     .then(result => {
                         alert(result.message);
                         if (result.success) {
-                            // ✅ 1. Tắt nút “Cho đi xét nghiệm”
+                            // Tat cho di xet nghiem
                             const xetBtn = document.querySelector("button[data-action='xetnghiem']");
                             xetBtn?.setAttribute("disabled", "true");
                             xetBtn?.classList.add("disabled");
 
-                            // ✅ 2. Bật lại nút “Khám bệnh”
+                            //  Bat Kham benh
                             const khamBtn = document.querySelector("button[data-action='kham']");
                             khamBtn?.classList.remove("d-none");
                             khamBtn.disabled = false;
                             khamBtn?.classList.remove("disabled");
 
-                            // ✅ 3. Bật lại nút “Kê toa thuốc”
+                            // Bat Ke toa thuoc
                             const ketoaBtn = document.querySelector("button[data-action='ketoa']");
                             ketoaBtn?.classList.remove("d-none");
                             ketoaBtn.disabled = false;

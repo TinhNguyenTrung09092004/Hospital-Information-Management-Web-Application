@@ -1,6 +1,7 @@
 ﻿use QLBenhVien
 go
 
+--------KHOA--------
 INSERT INTO KHOA VALUES 
 ('K01',N'KHOA KHÁM BỆNH TỔNG QUÁT'),
 ('K02',N'KHOA MŨI XOANG'),
@@ -16,15 +17,19 @@ INSERT INTO KHOA VALUES
 ('K10',N'KHOA KHÁM BỆNH 3'),
 ('K11',N'KHOA TỔNG HỢP 3'),
 ('K12',N'KHOA PHẪU THUẬT 3');
+
+--------DICHVU--------
 INSERT INTO DICHVU (tenDichVu, typeID) VALUES 
-(N'Khám Bệnh Sàng Lọc', '1');
+(N'Khám Bệnh Sàng Lọc', '1'),
+(N'Khám Bệnh Chuyên Khoa','1');
 INSERT INTO DICHVU (tenDichVu, typeID) VALUES 
-(N'Khám Bệnh Chuyên Khoa','1'),
 (N'Xét Nghiệm Dịch Tai','2'),
 (N'Chụp CT tai','2'),
 (N'Nội soi mũi xoang','2'),
 (N'CT scan xoang','2');
 
+
+--------PHONGKHAM--------
 INSERT INTO PHONGKHAM (maPhongKham, tenPhongKham, maKhoa, maDichVu)
 VALUES 
 ('PK01', N'P.Khám sàng lọc 1', 'K01', 1),
@@ -48,17 +53,21 @@ VALUES
 ('PCN03', N'P.Xét nghiệm dịch tai', 'K03', 3),
 ('PCN04', N'P.Chụp CT tai', 'K03', 4);
 
+--------DONGIA_DICHVU--------
+
+DECLARE @certName NVARCHAR(100) = 'CertQLTV';
+
 INSERT INTO DONGIA_DICHVU(maDichVu, donGia, ngayApDung)
 VALUES 
-(1, 150000, '2025-01-01'),
-(2, 250000, '2025-01-01'),
-(3, 180000, '2025-01-01'),
-(4, 500000, '2025-01-01'),
-(5, 300000, '2025-01-01'),
-(6, 700000, '2025-01-01');
+(1, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 150000)), '2025-01-01'),
+(2, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 250000)), '2025-01-01'),
+(3, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 180000)), '2025-01-01'),
+(4, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 500000)), '2025-01-01'),
+(5, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 300000)), '2025-01-01'),
+(6, EncryptByCert(Cert_ID(@certName), CONVERT(NVARCHAR, 700000)), '2025-01-01');
 
 
-
+--------THONGTIN_CANHAN--------
 INSERT INTO THONGTIN_CANHAN (maNhanVien, hoTen, ngaySinh, diaChi, soDienThoai, email, luongCoBan, phuCap)
 VALUES 
 ('BS00001', N'Nguyễn Văn A', '1980-05-10', N'123 Đường ABC, Quận 1, TP.HCM', '0909123456', 'a.nguyen@example.com',
@@ -114,7 +123,7 @@ VALUES (
     CONVERT(VARBINARY(MAX), 8000000),
     CONVERT(VARBINARY(MAX), 1000000)
 );
-select * from THONGTIN_CANHAN
+
 INSERT INTO THONGTIN_CANHAN ( maNhanVien, hoTen, ngaySinh, diaChi, soDienThoai, email, luongCoBan, phuCap)
 VALUES (
     'NVTV00001',
@@ -126,7 +135,7 @@ VALUES (
     CONVERT(VARBINARY(MAX), 8000000),
     CONVERT(VARBINARY(MAX), 1000000)
 );
-
+--------BACSI--------
 INSERT INTO BACSI (maBacSi, maKhoa, chuyenMon) VALUES 
 ('BS00001', 'K01', N'khám tổng quát lâm sàng'),
 ('BS00002', 'K01', N'khám tổng quát lâm sàng');
@@ -154,15 +163,35 @@ VALUES
 ('BS00009', 'K03', N'Xét nghiệm tai'),
 ('BS00010', 'K03', N'Chụp CT tai');
 
+--------PHONGBAN--------
+INSERT INTO PHONGBAN (maPhongBan, tenPhongBan)
+VALUES 
+('PB01', N'Phòng tài vụ'),
+('PB02', N'Phòng điều phối bệnh nhân');
 
-/*Tự đổi thành ngày hôm nay*/
+--------NHANVIEN--------
+INSERT INTO NHANVIEN (maNhanVien, maPhongBan)
+VALUES ('NVTV00001', 'PB01')
+
+--------LICH_LAMVIEC--------
 INSERT INTO LICH_LAMVIEC (maNhanVien, maPhongKham, ngayLam, gioBatDau, gioKetThuc)
 VALUES
-('BS00001', 'PK02', '2025-05-13', '07:00', '16:00'), 
-('BS00001', 'PK02', '2025-05-16', '07:00', '16:00'), 
+-- PK01
+('BS00001', 'PK01', '2025-05-27', '07:00', '16:00'),
+('BS00001', 'PK01', '2025-05-30', '07:00', '16:00'),
 
-('BS00002', 'PK02', '2025-05-14', '07:00', '16:00'), 
-('BS00002', 'PK02', '2025-05-17', '07:30', '14:00'),
+('BS00002', 'PK01', '2025-05-28', '07:00', '16:00'),
+('BS00002', 'PK01', '2025-05-31', '07:00', '16:00'),
 
-('BS00011', 'PK02', '2025-05-12', '07:00', '16:00'), 
-('BS00011', 'PK02', '2025-05-15', '07:00', '16:00'); 
+('BS00011', 'PK01', '2025-05-29', '07:00', '16:00'),
+('BS00011', 'PK01', '2025-06-01', '07:30', '14:00'),
+
+-- PK02
+('BS00001', 'PK02', '2025-05-28', '07:00', '16:00'),
+('BS00001', 'PK02', '2025-05-31', '07:00', '16:00'),
+
+('BS00002', 'PK02', '2025-05-29', '07:00', '16:00'),
+('BS00002', 'PK02', '2025-06-01', '07:30', '14:00'),
+
+('BS00011', 'PK02', '2025-05-27', '07:00', '16:00'),
+('BS00011', 'PK02', '2025-05-30', '07:00', '16:00');

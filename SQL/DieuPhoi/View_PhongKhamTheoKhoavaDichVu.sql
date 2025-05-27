@@ -1,4 +1,5 @@
 Use QLBenhVien
+go
 CREATE VIEW viewPhongKhamDP AS
 SELECT *
 FROM PHONGKHAM

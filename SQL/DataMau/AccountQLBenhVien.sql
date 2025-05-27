@@ -13,16 +13,19 @@ INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES
 ('bs7', HASHBYTES('SHA2_256', '123'), '1', 'BS00007');
 
 INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES 
-('qlns1', HASHBYTES('SHA2_256', '123'), '2', 'QLNS00001'),
-('qlns2', HASHBYTES('SHA2_256', '123'), '2', 'QLNS00002');
+('nvdp1', HASHBYTES('SHA2_256', '123'), '2', 'NVDP00001'),
+('nvdp2', HASHBYTES('SHA2_256', '123'), '2', 'NVDP00002');
+INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES 
+('nvtv1', HASHBYTES('SHA2_256', '123'), '3', 'NVTV00001'),
+('nvtv2', HASHBYTES('SHA2_256', '123'), '3', 'NVTV00001');
 
 INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES 
-('nvdp1', HASHBYTES('SHA2_256', '123'), '3', 'NVDP00001'),
-('nvdp2', HASHBYTES('SHA2_256', '123'), '3', 'NVDP00002');
-INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES 
-('nvtv1', HASHBYTES('SHA2_256', '123'), '4', 'NVTV0001'),
-('nvtv2', HASHBYTES('SHA2_256', '123'), '4', 'NVTV0001');
+('qlns1', HASHBYTES('SHA2_256', '123'), '4', 'QLNS00001'),
+('qlns2', HASHBYTES('SHA2_256', '123'), '4', 'QLNS00002');
 
+INSERT INTO ACCOUNT (username, passwordHash, typeID, maNhanVien)VALUES 
+('qltv1', HASHBYTES('SHA2_256', '123'), '5', 'QLTV00001'),
+('qltv2', HASHBYTES('SHA2_256', '123'), '5', 'QLTV00002');
 
 INSERT INTO PERMISSION VALUES
 ('admin');
@@ -91,3 +94,8 @@ VALUES
 	('nvtv1', 17),
 	('nvtv1', 18),
 	('nvtv1', 19);
+
+INSERT INTO ACCOUNT_PERMISSION (username, permissionID)
+VALUES 
+	('qltv1', 9),
+	('qltv1', 10);

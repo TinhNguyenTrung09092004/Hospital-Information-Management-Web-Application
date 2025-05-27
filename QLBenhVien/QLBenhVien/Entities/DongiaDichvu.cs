@@ -9,7 +9,7 @@ public partial class DongiaDichvu
 
     public int MaDichVu { get; set; }
 
-    public decimal DonGia { get; set; }
+    public byte[]? DonGia { get; set; }
 
     public DateOnly NgayApDung { get; set; }
 

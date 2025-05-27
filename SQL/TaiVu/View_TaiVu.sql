@@ -1,6 +1,6 @@
-CREATE OR ALTER VIEW viewTaiVu AS
 Use QLBenhVien
 Go
+CREATE OR ALTER VIEW viewTaiVu AS
 SELECT 
     ROW_NUMBER() OVER (ORDER BY kb.maKhamBenh, ct.ID) AS STT,
     kb.maBenhNhan,
@@ -41,7 +41,7 @@ begin
 end
 GO
 GRANT EXECUTE
-    ON OBJECT::[dbo].sp_viewPhongKhamDP TO userBenhVien
+    ON OBJECT::[dbo].sp_viewTaiVu TO userBenhVien
     AS [dbo];
 GO
 --drop proc sp_viewTaiVu

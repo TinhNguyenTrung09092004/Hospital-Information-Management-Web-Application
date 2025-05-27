@@ -1,6 +1,6 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
     const table = document.getElementById('table-dieuphoi');
-    if (!table) return; // Không phải trang điều phối => dừng
+    if (!table) return;
 
     const rows = table.querySelectorAll('.row-dieuphoi');
 
@@ -11,7 +11,6 @@
         const selectedValue = row.dataset.selected;
         const maPhongKhamDaCo = row.dataset.maphongkham;
 
-        // 🔥 Gắn sự kiện chọn dòng
         row.addEventListener('click', function () {
             rows.forEach(r => r.classList.remove('selected-dieuphoi'));
             row.classList.add('selected-dieuphoi');
@@ -21,7 +20,7 @@
             fetch(`/DieuPhoi/GetPhongKham?maKhoa=${encodeURIComponent(maKhoa)}&maDichVu=${maDichVu}`)
                 .then(res => res.ok ? res.json() : Promise.reject("Lỗi tải"))
                 .then(data => {
-                    console.log("🧪 Dữ liệu trả về từ fetch:", data);
+                    console.log("Dữ liệu trả về từ fetch:", data);
 
                     if (!Array.isArray(data)) {
                         dropdown.innerHTML = '<option value="">Không có phòng khám phù hợp</option>';

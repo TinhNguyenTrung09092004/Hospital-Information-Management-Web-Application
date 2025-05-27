@@ -7,7 +7,7 @@ AS
 SELECT 
     maDichVu,
     tenDichVu
-select * FROM DICHVU
+FROM DICHVU
 WHERE typeId = 2;
 GO
 	GRANT SELECT ON OBJECT::ViewXetNghiemBS TO userBenhVien;

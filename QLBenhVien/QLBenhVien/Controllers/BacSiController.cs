@@ -309,11 +309,11 @@ namespace QLBenhVien.Controllers
             try
             {
                 await cmd.ExecuteNonQueryAsync();
-                return Json(new { success = true, message = "Đã thêm thông tin xét nghiệm thành công." });
+                return Json(new { success = true, message = "Thêm thành công." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi khi thêm thông tin xét nghiệm: " + ex.Message });
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
             }
         }
 

@@ -1,6 +1,9 @@
-﻿CREATE OR ALTER PROCEDURE sp_TaoHoaDonKCB
+﻿Use QLBenhVien
+go
+CREATE OR ALTER PROCEDURE sp_TaoHoaDonKCB
     @maKhamBenh INT,
-    @nhanVienThu VARCHAR(10)
+    @nhanVienThu VARCHAR(10),
+    @certName NVARCHAR(100)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -12,25 +15,25 @@ BEGIN
 
     SET @maHoaDon = SCOPE_IDENTITY();
 
-    -- Them chi tiet kham chua nam trong hoa don
     INSERT INTO CHITIET_HOADON_KHAMCHUABENH (maHoaDon, donGia, maChiTietKham)
     SELECT 
         @maHoaDon,
-        (
-            SELECT TOP 1 donGia
-            FROM DONGIA_DICHVU
-            WHERE maDichVu = ck.maDichVu
-            ORDER BY ABS(DATEDIFF(DAY, ngayApDung, GETDATE()))
-        ),
-        ck.ID
+    (
+        SELECT TOP 1
+            dg.donGia 
+        FROM DONGIA_DICHVU dg
+        WHERE dg.maDichVu = ck.maDichVu
+        ORDER BY ABS(DATEDIFF(DAY, dg.ngayApDung, GETDATE()))
+    ) AS donGia,
+    ck.ID
     FROM CHITIET_KHAMBENH ck
     WHERE ck.maKhamBenh = @maKhamBenh
       AND NOT EXISTS (
-            SELECT 1 
-            FROM CHITIET_HOADON_KHAMCHUABENH ct 
-            WHERE ct.maChiTietKham = ck.ID
+          SELECT 1
+          FROM CHITIET_HOADON_KHAMCHUABENH ct
+          WHERE ct.maChiTietKham = ck.ID
       );
-END
+END;
 GO
 GRANT EXECUTE
     ON OBJECT::[dbo].sp_TaoHoaDonKCB TO userBenhVien

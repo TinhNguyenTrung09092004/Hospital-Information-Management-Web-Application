@@ -8,7 +8,7 @@ BEGIN
 
     DECLARE @today DATE = CAST(GETDATE() AS DATE);
 
-    SELECT 
+    SELECT  
         maLich,
         maNhanVien,
         maPhongKham,
@@ -22,7 +22,6 @@ BEGIN
         AND ngayLam = @today;
 END
 GO
-
 GRANT EXECUTE
     ON OBJECT::[dbo].sp_KiemTraLichLamViec TO userBenhVien
     AS [dbo];

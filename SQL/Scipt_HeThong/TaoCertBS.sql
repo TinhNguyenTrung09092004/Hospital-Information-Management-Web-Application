@@ -1,7 +1,0 @@
- use QLBenhVien
- go
- 
- CREATE CERTIFICATE BSCert
- ENCRYPTION BY PASSWORD ='Cert_P@$$wOrd'
- WITH SUBJECT = 'CertificateforBACSI'
- GRANT CONTROL ON CERTIFICATE::BSCert TO userBenhVien;

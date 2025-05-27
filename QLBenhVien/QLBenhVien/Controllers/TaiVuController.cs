@@ -14,10 +14,13 @@ namespace QLBenhVien.Controllers
     public class TaiVuController : Controller
     {
         private readonly DynamicConnectionProvider _connProvider;
-
-        public TaiVuController(DynamicConnectionProvider connProvider)
+        private readonly KeyVaultService _keyVaultService;
+        public TaiVuController(
+            DynamicConnectionProvider connProvider,
+            KeyVaultService keyVaultService)
         {
             _connProvider = connProvider;
+            _keyVaultService = keyVaultService;
         }
 
         public async Task<IActionResult> Index(int? page)
@@ -42,32 +45,30 @@ namespace QLBenhVien.Controllers
             var connStr = await _connProvider.GetDataConnectionStringAsync();
 
             var maNhanVien = User.Claims.FirstOrDefault(c => c.Type == "MaNhanVien")?.Value;
-            if (string.IsNullOrEmpty(maNhanVien))
-            {
-                TempData["Error"] = "Không tìm thấy mã nhân viên.";
-                return RedirectToAction("Index");
-            }
+         
+            var certName = await _keyVaultService.GetSecretAsync("CertQLTV");
 
-            // Tạo hóa đơn
             using var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
 
+     
             using (var cmd = new SqlCommand("sp_TaoHoaDonKCB", conn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
                 cmd.Parameters.AddWithValue("@nhanVienThu", maNhanVien);
+                cmd.Parameters.AddWithValue("@certName", certName); 
                 await cmd.ExecuteNonQueryAsync();
             }
 
-            // Lấy chi tiết hóa đơn
             using var context = QlbenhVienContextFactory.Create(connStr);
             var chiTietHoaDon = await context.ViewChiTietHoaDonTaiVus
-                .FromSqlRaw("EXEC sp_XemChiTietHoaDonTheoKhamBenh @maKhamBenh",
-                    new SqlParameter("@maKhamBenh", maKhamBenh))
+                .FromSqlRaw("EXEC sp_XemChiTietHoaDonTheoKhamBenh @maKhamBenh, @certName",
+                    new SqlParameter("@maKhamBenh", maKhamBenh),
+                    new SqlParameter("@certName", certName))
                 .ToListAsync();
 
-            // Truyền model HoaDon + ViewBag
+
             var hoaDonModel = new HoaDon
             {
                 MaHoaDon = chiTietHoaDon.FirstOrDefault()?.MaHoaDon ?? 0
@@ -78,6 +79,7 @@ namespace QLBenhVien.Controllers
 
             return View("ThanhToan", hoaDonModel);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> XacNhanThanhToan(HoaDon model)
@@ -106,7 +108,7 @@ namespace QLBenhVien.Controllers
                 });
 
                 await cmd.ExecuteNonQueryAsync();
-                TempData["SuccessMessage"] = "Thanh toán thành công.";
+                TempData["Success_ThanhToanHDKCB"] = "Thanh toán thành công.";
             }
             catch (Exception ex)
             {

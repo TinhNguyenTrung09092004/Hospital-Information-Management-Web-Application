@@ -1,9 +1,6 @@
 ﻿Use QLBenhVien
 Go
 
-select * from ChiTiet_KhamBenh
-select * from KhamBenh
-
 CREATE OR ALTER PROCEDURE sp_ThemChiTietKhamBenh
     @maKhamBenh INT,
     @maBSYeuCau VARCHAR(10),
@@ -73,7 +70,7 @@ BEGIN
         @maDichVu = @maDichVu,
         @ghiChu = @ghiChu;
 
-    -- Cập nhật tình trạng bệnh nhân
+    -- Cap nhat benh nhan khong con trong phong kham
     UPDATE DANHSACH_BENHNHAN
     SET tinhTrang = '3'
     WHERE maKhamBenh = @maKhamBenh;

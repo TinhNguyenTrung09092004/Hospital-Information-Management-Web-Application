@@ -81,7 +81,10 @@
                             }
                             <td style="text-align:left;">@item.MaDichVu</td>
                             <td>@item.TenDichVu</td>
-                            @(item.DonGia.HasValue ? item.DonGia.Value.ToString("N0") : "")
+                            <td>
+                                @(item.DonGia.HasValue ? item.DonGia.Value.ToString("N0") : "")
+                            </td>
+
 
                         </tr>
                     }
