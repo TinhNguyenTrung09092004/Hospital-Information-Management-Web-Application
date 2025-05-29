@@ -31,7 +31,7 @@ namespace QLBenhVien.Services
             {
                 throw new Exception("Thông tin kết nối dữ liệu không hợp lệ.");
             }
-
+ 
             return $"Server={server};Database={dbName};User ID={dbUser};Password={dbPass};TrustServerCertificate=True;";
         }
 

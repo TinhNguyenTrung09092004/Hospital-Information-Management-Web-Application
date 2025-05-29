@@ -15,7 +15,7 @@ public partial class ViewChiTietHoaDonTaiVu
 
     public string TenDichVu { get; set; } = null!;
 
-    public decimal? DonGia { get; set; }
+    public byte[]? DonGia { get; set; }
 
     public DateTime? NgayLap { get; set; }
 

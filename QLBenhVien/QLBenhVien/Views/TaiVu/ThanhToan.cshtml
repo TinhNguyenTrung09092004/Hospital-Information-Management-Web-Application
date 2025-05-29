@@ -1,11 +1,10 @@
-﻿@model QLBenhVien.Models.HoaDon
+﻿@model QLBenhVien.ViewModels.HoaDonViewModel
 @{
-    var chiTiet = ViewBag.ChiTietHoaDon as List<QLBenhVien.Entities.ViewChiTietHoaDonTaiVu>;
+    var chiTiet = Model.ChiTietHoaDon;
     var first = chiTiet.FirstOrDefault();
-    var totalAmount = (decimal)ViewBag.TotalAmount;
+    var totalAmount = Model.TotalAmount;
     var rowCount = chiTiet.Count;
 }
-
 <style>
     .invoice-table th {
         text-align: center;
@@ -48,9 +47,14 @@
         text-align: right;
     }
 </style>
-
 <div class="container mt-3">
     <h4>Chi tiết hóa đơn</h4>
+    <div class="alert alert-info">
+        <p><strong>DEBUG:</strong></p>
+        <p>Model null: @(Model == null)</p>
+        <p>Chi tiết hóa đơn count: @(Model?.ChiTietHoaDon?.Count ?? 0)</p>
+        <p>Mã hóa đơn: @(Model?.HoaDon?.MaHoaDon ?? 0)</p>
+    </div>
 
     @if (first != null)
     {
@@ -81,11 +85,7 @@
                             }
                             <td style="text-align:left;">@item.MaDichVu</td>
                             <td>@item.TenDichVu</td>
-                            <td>
-                                @(item.DonGia.HasValue ? item.DonGia.Value.ToString("N0") : "")
-                            </td>
-
-
+                            <td>@(item.DonGia.HasValue ? item.DonGia.Value.ToString("N0") : "")</td>
                         </tr>
                     }
                 }
@@ -97,13 +97,13 @@
         </table>
 
         <form asp-action="XacNhanThanhToan" asp-controller="TaiVu" method="post" onsubmit="return kiemTraTien()" class="mt-4">
-            <input type="hidden" asp-for="MaHoaDon" />
-            <input type="hidden" asp-for="SoTienThoi" id="soTienThoiInput" />
+            <input type="hidden" name="HoaDon.MaHoaDon" value="@Model.HoaDon.MaHoaDon" />
+            <input type="hidden" name="HoaDon.SoTienThoi" id="soTienThoiInput" />
 
             <div class="d-flex justify-content-end align-items-start gap-3">
                 <div>
                     <label class="form-label"><strong>Tiền nhận:</strong></label>
-                    <input asp-for="SoTienNhan" id="tienNhan" class="form-control" style="width: 200px;" oninput="tinhTienThoi()" required />
+                    <input name="HoaDon.SoTienNhan" id="tienNhan" class="form-control" style="width: 200px;" oninput="tinhTienThoi()" required />
                 </div>
                 <div>
                     <label class="form-label"><strong>Tiền thối lại:</strong></label>
@@ -130,7 +130,7 @@
         var tienNhan = parseFloat(document.getElementById("tienNhan").value) || 0;
         var tienThoi = tienNhan - tong;
         document.getElementById("tienThoi").value = tienThoi >= 0 ? tienThoi.toLocaleString() : "0";
-        document.getElementById("soTienThoiInput").value = tienThoi >= 0 ? tienThoi.toFixed(2) : "0.00"
+        document.getElementById("soTienThoiInput").value = tienThoi >= 0 ? tienThoi.toFixed(2) : "0.00";
     }
 
     function kiemTraTien() {

@@ -33,7 +33,6 @@ GO
 
 --drop view viewTaiVu
 
-
 CREATE PROCEDURE sp_viewTaiVu
 as
 begin

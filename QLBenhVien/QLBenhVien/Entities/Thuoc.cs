@@ -11,8 +11,6 @@ public partial class Thuoc
 
     public string? DonViTinh { get; set; }
 
-    public string? ThongTin { get; set; }
-
     public int SoLuongTon { get; set; }
 
     public DateTime? NgayCapNhat { get; set; }

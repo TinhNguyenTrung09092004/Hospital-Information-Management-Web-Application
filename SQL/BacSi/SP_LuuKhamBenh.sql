@@ -1,7 +1,7 @@
 Use QLBenhVien
 Go
 CREATE OR ALTER PROCEDURE sp_UpdateKhamBenh_MaHoa
-    @ma NVARCHAR(100),       
+    @ma NVARCHAR(100),    
     @BSCert NVARCHAR(100),
     @maKhamBenh INT,
     @trieuChung NVARCHAR(MAX),
@@ -55,3 +55,51 @@ GO
 GO
 
 --drop proc sp_UpdateKhamBenh_MaHoa
+
+CREATE OR ALTER PROCEDURE sp_GiaiMaKhamBenh
+    @ma NVARCHAR(100),          
+    @BSCert NVARCHAR(100),       
+    @maKhamBenh INT              
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @sql NVARCHAR(MAX);
+
+    SET @sql = '
+    OPEN SYMMETRIC KEY [' + @ma + ']
+    DECRYPTION BY CERTIFICATE [' + @BSCert + ']
+    WITH PASSWORD = ''Cert_P@$$wOrd'';
+
+    SELECT 
+        maKhamBenh,
+        CONVERT(NVARCHAR(MAX), DecryptByKey(
+            trieuChung,
+            1,
+            CONVERT(NVARCHAR(100), N''' + @ma + ''')
+        )) AS trieuChungGiaiMa,
+        CONVERT(NVARCHAR(MAX), DecryptByKey(
+            chanDoanCuoiCung,
+            1,
+            CONVERT(NVARCHAR(100), N''' + @ma + ''')
+        )) AS chanDoanGiaiMa
+    FROM KHAMBENH
+    WHERE maKhamBenh = ' + CAST(@maKhamBenh AS NVARCHAR) + ';
+
+    CLOSE SYMMETRIC KEY [' + @ma + '];';
+
+    EXEC (@sql);
+END;
+GO
+GRANT EXECUTE ON OBJECT::sp_GiaiMaKhamBenh TO userBenhVien;
+Go
+--drop proc sp_GiaiMaKhamBenh
+
+--EXEC sp_GiaiMaKhamBenh 
+--    @maKhamBenh = 1, 
+--    @ma = 'bb', 
+--    @BSCert = 'BSCert';
+
+
+

@@ -26,12 +26,13 @@
             <option value="">-- quyền chưa có --</option>
         </select>
     </div>
-
     <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
         <input type="hidden" id="selectedUsername" name="username" />
         <input type="hidden" id="selectedPermissionId" name="permissionId" />
 
-        <button type="submit" class="btn btn-primary mt-3" onclick="prepareSubmit()">Phân quyền</button>
+        <button type="submit" class="btn btn-primary mt-3" onclick="return prepareSubmit()">Phân quyền</button>
     </form>
 
 </div>
@@ -69,5 +70,15 @@
         {
             <text>alert('Lỗi: @TempData["ErrorCreate"]');</text>
         }
+        function prepareSubmit() {
+            const username = document.getElementById("usernameSelect").value;
+            const permissionId = document.getElementById("availablePermissions").value;
+
+            document.getElementById("selectedUsername").value = username;
+            document.getElementById("selectedPermissionId").value = permissionId;
+
+            return true; 
+        }
+
     </script>
 }

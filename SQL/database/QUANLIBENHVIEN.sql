@@ -66,6 +66,7 @@ CREATE TABLE BACSI (
     maBacSi VARCHAR(10) PRIMARY KEY,
 	maKhoa VARCHAR(10) NOT NULL,
     chuyenMon NVARCHAR(50),
+	hasKey VARCHAR(1) DEFAULT '0',
     FOREIGN KEY (maKhoa) REFERENCES KHOA(maKhoa),
     FOREIGN KEY (maBacSi) REFERENCES THONGTIN_CANHAN(maNhanVien),
 );
@@ -143,7 +144,6 @@ CREATE TABLE THUOC (
     maThuoc VARCHAR(10) PRIMARY KEY,
     tenThuoc NVARCHAR(100) NOT NULL,
     donViTinh NVARCHAR(20),
-    thongTin NVARCHAR(MAX),
 	soLuongTon INT NOT NULL CHECK (soLuongTon >= 0),
     ngayCapNhat DATETIME DEFAULT GETDATE(),
 );

@@ -1,4 +1,4 @@
-Use QLBenhVien
+﻿Use QLBenhVien
 Go
 CREATE OR ALTER VIEW view_ChiTietHoaDonTaiVu AS
 SELECT 

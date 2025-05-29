@@ -1,5 +1,6 @@
 ﻿USE QLBenhVien_ACCOUNT;
 GO
+
 INSERT INTO ACCOUNT (username, passwordHash, typeID)VALUES 
 ('admin1', HASHBYTES('SHA2_256', '123'), '0'),
 ('admin2', HASHBYTES('SHA2_256', '123'), '0'),

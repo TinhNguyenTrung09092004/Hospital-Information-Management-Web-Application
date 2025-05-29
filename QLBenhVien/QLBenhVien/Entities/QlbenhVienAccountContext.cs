@@ -26,23 +26,24 @@ public partial class QlbenhVienAccountContext : DbContext
 
     public virtual DbSet<ViewTaiKhoan> ViewTaiKhoans { get; set; }
     public virtual DbSet<AccountInfo> AccountInfos { get; set; }
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Server=.; Database=QLBenhVien_ACCOUNT; Integrated Security=True; TrustServerCertificate=True;");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.; Database=QLBenhVien_ACCOUNT; Integrated Security=True; TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountInfo>(entity =>
         {
-            entity.HasNoKey(); // Vì là kết quả từ stored procedure
+            entity.HasNoKey(); 
             entity.Property(e => e.Username).HasColumnName("username");
             entity.Property(e => e.TypeID).HasColumnName("typeID");
             entity.Property(e => e.MaNhanVien).HasColumnName("maNhanVien");
             entity.Property(e => e.PermissionID).HasColumnName("permissionID");
         });
+
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Username).HasName("PK__ACCOUNT__F3DBC57398F06A76");
+            entity.HasKey(e => e.Username).HasName("PK__ACCOUNT__F3DBC573B99CE34A");
 
             entity.ToTable("ACCOUNT");
 
@@ -54,11 +55,6 @@ public partial class QlbenhVienAccountContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.HasKey)
-                .HasMaxLength(1)
-                .IsUnicode(false)
-                .HasDefaultValue("0")
-                .HasColumnName("hasKey");
             entity.Property(e => e.MaNhanVien)
                 .HasMaxLength(10)
                 .IsUnicode(false)
@@ -75,14 +71,14 @@ public partial class QlbenhVienAccountContext : DbContext
                     r => r.HasOne<Permission>().WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ACCOUNT_P__permi__10566F31"),
+                        .HasConstraintName("FK__ACCOUNT_P__permi__3E52440B"),
                     l => l.HasOne<Account>().WithMany()
                         .HasForeignKey("Username")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ACCOUNT_P__usern__0F624AF8"),
+                        .HasConstraintName("FK__ACCOUNT_P__usern__3D5E1FD2"),
                     j =>
                     {
-                        j.HasKey("Username", "PermissionId").HasName("PK__ACCOUNT___2E59D664FFDEFED5");
+                        j.HasKey("Username", "PermissionId").HasName("PK__ACCOUNT___2E59D6649344D11D");
                         j.ToTable("ACCOUNT_PERMISSION");
                         j.IndexerProperty<string>("Username")
                             .HasMaxLength(10)
@@ -94,11 +90,11 @@ public partial class QlbenhVienAccountContext : DbContext
 
         modelBuilder.Entity<Permission>(entity =>
         {
-            entity.HasKey(e => e.PermissionId).HasName("PK__PERMISSI__D821317C3EC7179B");
+            entity.HasKey(e => e.PermissionId).HasName("PK__PERMISSI__D821317CF024391D");
 
             entity.ToTable("PERMISSION");
 
-            entity.HasIndex(e => e.PermissionName, "UQ__PERMISSI__70661EFCA9DA8547").IsUnique();
+            entity.HasIndex(e => e.PermissionName, "UQ__PERMISSI__70661EFCCAF206F0").IsUnique();
 
             entity.Property(e => e.PermissionId).HasColumnName("permissionID");
             entity.Property(e => e.PermissionName)
@@ -145,10 +141,6 @@ public partial class QlbenhVienAccountContext : DbContext
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
                 .HasColumnName("createdDate");
-            entity.Property(e => e.HasKey)
-                .HasMaxLength(1)
-                .IsUnicode(false)
-                .HasColumnName("hasKey");
             entity.Property(e => e.MaNhanVien)
                 .HasMaxLength(10)
                 .IsUnicode(false)

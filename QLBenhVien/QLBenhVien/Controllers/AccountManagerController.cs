@@ -45,11 +45,12 @@ namespace QLBenhVien.Controllers
             using var context = QlbenhVienContextFactory.Create(connStr);
 
 
-            var maNhanViens = context.MaNhanViens
-                .FromSqlRaw("EXEC sp_LayMaNV")
-                .AsEnumerable()
-                .Select(x => x.MaNhanVienId)
-                .ToList();
+           var maNhanViens = context
+    .Set<QLBenhVien.Models.MaNhanVien>()
+    .FromSqlRaw("EXEC sp_LayMaNhanVien")
+    .AsEnumerable()
+    .Select(x => x.MaNhanVienId)
+    .ToList();
 
             ViewBag.MaNhanVienList = new SelectList(maNhanViens);
 
@@ -108,29 +109,31 @@ namespace QLBenhVien.Controllers
         [HttpGet]
         public async Task<IActionResult> AddKey()
         {
-            var connStr = await _connProvider.GetAccountConnectionStringAsync();
-            using var context = QlbenhVienAccountContextFactory.Create(connStr);
+            var connStr = await _connProvider.GetDataConnectionStringAsync(); 
 
-            var accountsWithoutKey = await context.ViewTaiKhoans
-                .FromSqlRaw("EXEC sp_CheckKeyAccount")
+            using var context = QlbenhVienContextFactory.Create(connStr); 
+
+            var bacSisWithoutKey = await context
+                .Set<Bacsi>()
+                .FromSqlRaw("EXEC dbo.sp_CheckKeyAccount")
                 .ToListAsync();
 
-            var usernames = accountsWithoutKey
-                .Select(x => x.Username)
+            var usernames = bacSisWithoutKey
+                .Select(x => x.MaBacSi)
                 .Distinct()
                 .ToList();
 
             ViewBag.UsernameList = usernames;
-            ViewBag.Accounts = accountsWithoutKey;
+            ViewBag.Accounts = bacSisWithoutKey;
 
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddKey(string username, string secretKey)
+        public async Task<IActionResult> AddKey(string maBacSi, string secretKey)
         {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(secretKey))
+            if (string.IsNullOrWhiteSpace(maBacSi) || string.IsNullOrWhiteSpace(secretKey))
             {
                 TempData["Error"] = "Vui lòng nhập đầy đủ thông tin.";
                 return RedirectToAction("AddKey");
@@ -138,28 +141,30 @@ namespace QLBenhVien.Controllers
 
             try
             {
-                string secretName = $"{username}-key";
+
+                string secretName = $"{maBacSi}-key";
                 await _keyVaultService.SetSecretAsync(secretName, secretKey);
+
                 string certName = await _keyVaultService.GetSecretAsync("CertificateBS");
 
-                using var conn = new SqlConnection(await _connProvider.GetAccountConnectionStringAsync());
+                using var conn = new SqlConnection(await _connProvider.GetDataConnectionStringAsync());
                 await conn.OpenAsync();
 
-                using var cmd = new SqlCommand("sp_CapNhatKeyTaiKhoan", conn)
+                using var cmd = new SqlCommand("sp_ThucHienTaoKey", conn)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@keyValue", secretKey);
                 cmd.Parameters.AddWithValue("@BSCert", certName);
+                cmd.Parameters.AddWithValue("@maBS", maBacSi);
 
                 await cmd.ExecuteNonQueryAsync();
 
-                TempData["Success"] = "Luu khoa thanh cong.";
+                TempData["Success"] = "Lưu khóa thành công.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Loi khi luu khoa: " + ex.Message;
+                TempData["Error"] = "Lỗi khi lưu khóa: " + ex.Message;
             }
 
             return RedirectToAction("AddKey");

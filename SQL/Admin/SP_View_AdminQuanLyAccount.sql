@@ -6,29 +6,12 @@ SELECT
     username,
     maNhanVien,
     typeID,
-    createdDate,
-    hasKey
+    createdDate
 FROM ACCOUNT;
 GO
 	GRANT SELECT ON OBJECT::viewTaiKhoan TO userAccountBenhVien;
 GO
 --drop view viewTaiKhoan
-
-Use QLBenhVien_ACCOUNT 
-go
-CREATE OR ALTER PROCEDURE sp_CheckKeyAccount
-AS
-BEGIN
-   select * from viewTaiKhoan 
-   WHERE hasKey = '0' and typeID = '1';
-END
-GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].sp_CheckKeyAccount TO userAccountBenhVien
-    AS [dbo];
-GO
-
---drop proc sp_CheckKeyAccount
 
 CREATE OR ALTER PROCEDURE sp_ViewTaiKhoan
 AS
@@ -44,6 +27,7 @@ GO
 --drop proc sp_ViewTaiKhoan
 
 use QLBenhVien
+go
 CREATE OR ALTER VIEW viewThongTinNhanVien AS
 SELECT
     maNhanVien,
@@ -74,6 +58,8 @@ GO
 --drop proc sp_LayMaNV
 
 use QLBenhVien_ACCOUNT
+go
+
 CREATE OR ALTER PROCEDURE sp_ThemTaiKhoanNV
     @username VARCHAR(50),
     @passwordHash VARBINARY(MAX),
@@ -140,7 +126,8 @@ GO
 GO
 --drop proc sp_LayQuyenTK
 
-
+use QLBenhVien_ACCOUNT
+go
 CREATE OR ALTER PROCEDURE sp_GanQuyen
     @username VARCHAR(50),
     @permissionId INT
@@ -153,7 +140,6 @@ END
 GO
 	GRANT EXECUTE ON OBJECT::sp_GanQuyen TO userAccountBenhVien;
 Go
-
 --drop proc sp_GanQuyen
 
 CREATE OR ALTER PROCEDURE sp_XoaQuyen
@@ -169,42 +155,3 @@ GO
 GO
 
 --drop proc sp_XoaQuyen
-
-
-CREATE OR ALTER PROCEDURE sp_CapNhatKeyTaiKhoan
-    @username VARCHAR(50),
-    @keyValue NVARCHAR(100),  
-    @BSCert NVARCHAR(100)    
-WITH EXECUTE AS OWNER
-AS
-BEGIN
-    BEGIN TRY
-        IF NOT EXISTS (SELECT 1 FROM sys.symmetric_keys WHERE name = @keyValue)
-        BEGIN
-            DECLARE @sqlCreateKey NVARCHAR(MAX);
-            SET @sqlCreateKey = '
-            CREATE SYMMETRIC KEY [' + @keyValue + '] 
-            WITH ALGORITHM = AES_192 
-            ENCRYPTION BY CERTIFICATE [' + @BSCert + '];';
-            EXEC (@sqlCreateKey);
-
-            DECLARE @sqlGrant NVARCHAR(MAX);
-            SET @sqlGrant = '
-            GRANT CONTROL ON SYMMETRIC KEY::[' + @keyValue + '] TO userBenhVien;';
-            EXEC (@sqlGrant);
-        END
-
-        UPDATE ACCOUNT
-        SET hasKey = '1'
-        WHERE username = @username;
-    END TRY
-    BEGIN CATCH
-        DECLARE @errMsg NVARCHAR(4000) = ERROR_MESSAGE();
-        THROW 50001, @errMsg, 1;
-    END CATCH
-END
-GO
-	GRANT EXECUTE ON OBJECT::sp_CapNhatKeyTaiKhoan TO userAccountBenhVien;
-GO
-
---drop proc sp_CapNhatKeyTaiKhoan

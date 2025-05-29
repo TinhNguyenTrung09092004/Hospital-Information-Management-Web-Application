@@ -7,6 +7,3 @@ CREATE LOGIN userAccountBenhVien WITH PASSWORD = 'userAccountBenhVien';
 USE QLBenhVien_ACCOUNT;
 GO
 CREATE USER userAccountBenhVien FOR LOGIN userAccountBenhVien;
-
-
-

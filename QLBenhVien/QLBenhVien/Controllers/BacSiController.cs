@@ -84,8 +84,13 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Không tìm thấy mã khám bệnh." });
             }
 
-            string username = User.Identity?.Name ?? "";
-            string secretName = $"{username}-key";
+            var maBacSi = User.FindFirst("MaNhanVien")?.Value;
+            if (string.IsNullOrWhiteSpace(maBacSi))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã bác sĩ trong phiên làm việc." });
+            }
+
+            string secretName = $"{maBacSi}-key";
 
             string ma, BSCert;
             try
@@ -98,7 +103,7 @@ namespace QLBenhVien.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = $"Chưa có khóa được tạo cho người dùng '{username}'. Vui lòng tạo trước khi tiếp tục."
+                        message = $"Chưa có khóa được tạo cho bác sĩ '{maBacSi}'. Vui lòng tạo trước khi tiếp tục."
                     });
                 }
             }
@@ -132,7 +137,6 @@ namespace QLBenhVien.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<IActionResult> LuuToaThuoc(IFormCollection form)
         {
@@ -142,10 +146,15 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Không tìm thấy mã khám bệnh hợp lệ." });
             }
 
-            string username = User.Identity?.Name ?? "";
-            string secretName = $"{username}-key";
+            string maBacSi = User.FindFirst("MaNhanVien")?.Value;
+            if (string.IsNullOrWhiteSpace(maBacSi))
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã bác sĩ trong phiên làm việc." });
+            }
 
+            string secretName = $"{maBacSi}-key";
             string ma, BSCert;
+
             try
             {
                 ma = await _keyVaultService.GetSecretAsync(secretName);
@@ -153,7 +162,7 @@ namespace QLBenhVien.Controllers
 
                 if (string.IsNullOrWhiteSpace(ma))
                 {
-                    return Json(new { success = false, message = $"Chưa có khóa được tạo cho người dùng '{username}'." });
+                    return Json(new { success = false, message = $"Chưa có khóa được tạo cho bác sĩ '{maBacSi}'." });
                 }
             }
             catch (Exception ex)
@@ -161,6 +170,7 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = $"Lỗi khi truy cập Key Vault: {ex.Message}" });
             }
 
+            // Lấy danh sách thuốc từ form
             List<string> tenThuocList = new();
             List<string> soLuongList = new();
             List<string> lieuDungList = new();
@@ -220,6 +230,7 @@ namespace QLBenhVien.Controllers
         }
 
 
+
         private async Task<List<ViewXetNghiemB>> LayDichVuXetNghiem()
         {
             var result = new List<ViewXetNghiemB>();
@@ -253,14 +264,34 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Không tìm thấy mã khám bệnh." });
             }
 
-            string maBSYeuCau = User.FindFirst("MaNhanVien")?.Value;
+            var maBSYeuCau = User.FindFirst("MaNhanVien")?.Value;
             if (string.IsNullOrWhiteSpace(maBSYeuCau))
             {
                 return Json(new { success = false, message = "Không tìm thấy mã bác sĩ." });
             }
 
-            string username = User.Identity?.Name ?? "";
-            string secretName = $"{username}-key";
+            string secretName = $"{maBSYeuCau}-key";
+
+            string ma, BSCert;
+            try
+            {
+                ma = await _keyVaultService.GetSecretAsync(secretName);
+                BSCert = await _keyVaultService.GetSecretAsync("CertificateBS");
+
+                if (string.IsNullOrWhiteSpace(ma))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Chưa có khóa được tạo cho bác sĩ '{maBSYeuCau}'. Vui lòng tạo trước khi tiếp tục."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi truy cập Key Vault: {ex.Message}" });
+            }
+
 
             string ghiChu = form["GhiChuXet"];
             string maDichVuStr = form["MaDichVu"];
@@ -275,21 +306,6 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Bạn phải nhập ghi chú." });
             }
 
-            string ma;
-            string BSCert;
-
-
-            ma = await _keyVaultService.GetSecretAsync(secretName);
-            BSCert = await _keyVaultService.GetSecretAsync("CertificateBS");
-            if (string.IsNullOrWhiteSpace(ma))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = $"Chưa có khóa được tạo cho người dùng '{username}'. Vui lòng tạo trước khi tiếp tục."
-                });
-            }
-
             var connStr = await _connProvider.GetDataConnectionStringAsync();
             using var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
@@ -302,7 +318,7 @@ namespace QLBenhVien.Controllers
             cmd.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
             cmd.Parameters.AddWithValue("@maBSYeuCau", maBSYeuCau);
             cmd.Parameters.AddWithValue("@maDichVu", maDichVu);
-            cmd.Parameters.AddWithValue("@ghiChu", ghiChu ?? "");
+            cmd.Parameters.AddWithValue("@ghiChu", ghiChu);
             cmd.Parameters.AddWithValue("@ma", ma);
             cmd.Parameters.AddWithValue("@BSCert", BSCert);
 
@@ -316,6 +332,7 @@ namespace QLBenhVien.Controllers
                 return Json(new { success = false, message = "Lỗi: " + ex.Message });
             }
         }
+
 
     }
 }

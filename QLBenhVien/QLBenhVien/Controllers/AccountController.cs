@@ -61,7 +61,7 @@ namespace QLBenhVien.Controllers
             var account = result[0];
 
             string dataConnStr = await _connProvider.GetDataConnectionStringAsync();
-            
+
             //if (account.TypeID == "1" || account.TypeID == "2" || account.TypeID == "3" || account.TypeID == "5"
             //    || account.TypeID == "4")
             //{

@@ -47,39 +47,38 @@ GO
 GO
 
 --drop proc sp_ThemVaoDanhSachBenhNhan
---select * from DANHSACH_BENHNHAN
 
-CREATE OR ALTER PROCEDURE sp_CapNhatThanhToanHoaDon
-    @maHoaDon INT,
-    @soTienNhan DECIMAL(15, 2),
-    @soTienThoi DECIMAL(15, 2)
-AS
-BEGIN
-    SET NOCOUNT ON;
+	CREATE OR ALTER PROCEDURE sp_CapNhatThanhToanHoaDon
+		@maHoaDon INT,
+		@soTienNhan DECIMAL(15, 2),
+		@soTienThoi DECIMAL(15, 2)
+	AS
+	BEGIN
+		SET NOCOUNT ON;
 
-    IF NOT EXISTS (
-        SELECT 1
-        FROM HOADON
-        WHERE maHoaDon = @maHoaDon AND thanhToan = '0'
-    )
-    BEGIN
-        RAISERROR(N'Hoa don khong ton tai hoac da thanh toan.', 16, 1);
-        RETURN;
-    END
+		IF NOT EXISTS (
+			SELECT 1
+			FROM HOADON
+			WHERE maHoaDon = @maHoaDon AND thanhToan = '0'
+		)
+		BEGIN
+			RAISERROR(N'Hoa don khong ton tai hoac da thanh toan.', 16, 1);
+			RETURN;
+		END
 
-    UPDATE HOADON
-    SET 
-        soTienNhan = @soTienNhan,
-        soTienThoi = @soTienThoi,
-        thanhToan = '1'
-    WHERE maHoaDon = @maHoaDon;
+		UPDATE HOADON
+		SET 
+			soTienNhan = @soTienNhan,
+			soTienThoi = @soTienThoi,
+			thanhToan = '1'
+		WHERE maHoaDon = @maHoaDon;
 
-	EXEC sp_ThemVaoDanhSachBenhNhan @maHoaDon;
-END
-GO
-GRANT EXECUTE
-    ON OBJECT::[dbo].sp_CapNhatThanhToanHoaDon TO userBenhVien
-    AS [dbo];
-GO
+		EXEC sp_ThemVaoDanhSachBenhNhan @maHoaDon;
+	END
+	GO
+	GRANT EXECUTE
+		ON OBJECT::[dbo].sp_CapNhatThanhToanHoaDon TO userBenhVien
+		AS [dbo];
+	GO
 
 --drop proc sp_CapNhatThanhToanHoaDon

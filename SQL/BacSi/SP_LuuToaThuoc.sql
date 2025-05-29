@@ -92,3 +92,47 @@ GO
 
 
 --drop proc sp_ThemToaThuoc_MaHoa
+
+
+CREATE OR ALTER PROCEDURE sp_XemToaThuocTheoKhamBenh_GiaiMa
+    @maKhamBenh INT,
+    @ma NVARCHAR(100),      
+    @BSCert NVARCHAR(100) 
+WITH EXECUTE AS OWNER
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @sqlOpen NVARCHAR(MAX) = '
+        OPEN SYMMETRIC KEY [' + @ma + ']
+        DECRYPTION BY CERTIFICATE [' + @BSCert + ']
+        WITH PASSWORD = ''Cert_P@$$wOrd'';
+    ';
+    EXEC (@sqlOpen);
+
+    SELECT 
+        ct.maToaThuoc,
+        CONVERT(NVARCHAR(MAX), DecryptByKey(ct.tenThuoc, 1, CONVERT(NVARCHAR(100), @ma))) AS tenThuocGiaiMa,
+        ct.soLuong,
+        ct.lieuDung,
+        CONVERT(NVARCHAR(MAX), DecryptByKey(ct.ghiChu, 1, CONVERT(NVARCHAR(100), @ma))) AS ghiChuGiaiMa
+    FROM CHITIET_TOATHUOC ct;
+
+    DECLARE @sqlClose NVARCHAR(MAX) = 'CLOSE SYMMETRIC KEY [' + @ma + ']';
+    EXEC (@sqlClose);
+END;
+GO
+	GRANT EXECUTE ON OBJECT::sp_XemToaThuocTheoKhamBenh_GiaiMa TO userBenhVien;
+Go
+--drop proc sp_XemToaThuocTheoKhamBenh_GiaiMa
+
+--Thay ten khoa va ten cert tuong ung
+--EXEC sp_XemToaThuocTheoKhamBenh_GiaiMa
+--    @maKhamBenh = 2,
+--    @ma = 'bb',
+--    @BSCert = 'BSCert';
+
+--EXEC sp_XemToaThuocTheoKhamBenh_GiaiMa
+--    @maKhamBenh = 2,
+--    @ma = 'â',
+--    @BSCert = 'BSCert';

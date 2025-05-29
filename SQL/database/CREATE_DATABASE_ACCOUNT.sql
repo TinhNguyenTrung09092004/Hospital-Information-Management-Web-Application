@@ -7,8 +7,7 @@ CREATE TABLE ACCOUNT (
     passwordHash VARBINARY(MAX),
 	maNhanVien VARCHAR(10),
 	typeID VARCHAR(2),
-    createdDate DATETIME DEFAULT GETDATE(),
-	hasKey VARCHAR(1) DEFAULT '0',
+    createdDate DATETIME DEFAULT GETDATE()
 );
 
 --Các quyền

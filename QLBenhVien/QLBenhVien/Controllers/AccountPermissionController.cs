@@ -78,7 +78,7 @@ namespace QLBenhVien.Controllers
         {
             if (string.IsNullOrEmpty(username) || permissionId <= 0)
             {
-                TempData["Error"] = "Vui lòng chọn tài khoản và quyền để gán.";
+                TempData["Error_AccountPermission"] = "Vui lòng chọn tài khoản và quyền để gán.";
                 return RedirectToAction("Create");
             }
 
@@ -97,7 +97,7 @@ namespace QLBenhVien.Controllers
             try
             {
                 await cmd.ExecuteNonQueryAsync();
-                TempData["Success"] = "Gan quyen thanh cong.";
+                TempData["Success_AccountPermission"] = "Gan quyen thanh cong.";
             }
             catch (SqlException ex)
             {

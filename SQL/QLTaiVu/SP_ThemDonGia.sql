@@ -38,6 +38,7 @@ go
 
 --drop proc sp_ThemDonGiaThuoc
 
+
 CREATE OR ALTER PROCEDURE sp_ThemDonGiaDichVu
     @maDichVu INT,
     @donGia DECIMAL(15,2),
@@ -48,17 +49,23 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @encryptedGia VARBINARY(MAX);
-    SET @encryptedGia = EncryptByCert(
-        Cert_ID(@certName),
-        CAST(@donGia AS NVARCHAR)
-    );
+    DECLARE @sql NVARCHAR(MAX);
+    SET @sql = '
+        DECLARE @encryptedGia VARBINARY(MAX);
+        SET @encryptedGia = EncryptByCert(
+            Cert_ID(''' + @certName + '''),
+            CONVERT(NVARCHAR(MAX), ' + CAST(@donGia AS NVARCHAR) + ')
+        );
 
-    INSERT INTO DONGIA_DICHVU (maDichVu, donGia, ngayApDung)
-    VALUES (@maDichVu, @encryptedGia, @ngayApDung);
+        INSERT INTO DONGIA_DICHVU (maDichVu, donGia, ngayApDung)
+        VALUES (' + CAST(@maDichVu AS NVARCHAR) + ', @encryptedGia, ''' + CONVERT(NVARCHAR(10), @ngayApDung, 120) + ''');
+    ';
+
+    EXEC sp_executesql @sql;
 END;
 GO
-	GRANT EXECUTE ON OBJECT::[dbo].sp_ThemDonGiaDichVu TO userBenhVien AS [dbo];
+
+GRANT EXECUTE ON OBJECT::[dbo].sp_ThemDonGiaDichVu TO userBenhVien AS [dbo];
 GO
 
 --drop proc sp_ThemDonGiaDichVu

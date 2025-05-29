@@ -7,7 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authorization;
 using X.PagedList.Extensions;
 using System.Data;
-
+using QLBenhVien.ViewModels;
 namespace QLBenhVien.Controllers
 {
     [Authorize]
@@ -39,51 +39,76 @@ namespace QLBenhVien.Controllers
             return View(pagedList);
         }
 
+        // Controller sửa lại
+        // Controller sửa lại
         [HttpPost]
         public async Task<IActionResult> ThanhToan(int maKhamBenh)
         {
             var connStr = await _connProvider.GetDataConnectionStringAsync();
-
             var maNhanVien = User.Claims.FirstOrDefault(c => c.Type == "MaNhanVien")?.Value;
-         
             var certName = await _keyVaultService.GetSecretAsync("CertQLTV");
 
-            using var conn = new SqlConnection(connStr);
-            await conn.OpenAsync();
-
-     
-            using (var cmd = new SqlCommand("sp_TaoHoaDonKCB", conn))
+            using (var conn = new SqlConnection(connStr))
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
-                cmd.Parameters.AddWithValue("@nhanVienThu", maNhanVien);
-                cmd.Parameters.AddWithValue("@certName", certName); 
-                await cmd.ExecuteNonQueryAsync();
+                await conn.OpenAsync();
+
+                using (var cmd = new SqlCommand("sp_TaoHoaDonKCB", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@maKhamBenh", maKhamBenh);
+                    cmd.Parameters.AddWithValue("@nhanVienThu", maNhanVien);
+                    cmd.Parameters.AddWithValue("@certName", certName);
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
 
             using var context = QlbenhVienContextFactory.Create(connStr);
-            var chiTietHoaDon = await context.ViewChiTietHoaDonTaiVus
-                .FromSqlRaw("EXEC sp_XemChiTietHoaDonTheoKhamBenh @maKhamBenh, @certName",
-                    new SqlParameter("@maKhamBenh", maKhamBenh),
-                    new SqlParameter("@certName", certName))
-                .ToListAsync();
 
+            // Kiểm tra hóa đơn mới được tạo
+            var hoaDonCreated = await context.Hoadons
+                .Where(h => h.MaKhamBenh == maKhamBenh && h.ThanhToan == "0")
+                .OrderByDescending(h => h.MaHoaDon)
+                .FirstOrDefaultAsync();
 
-            var hoaDonModel = new HoaDon
+            if (hoaDonCreated == null)
             {
-                MaHoaDon = chiTietHoaDon.FirstOrDefault()?.MaHoaDon ?? 0
+                TempData["ErrorMessage"] = "Không tạo được hóa đơn. Kiểm tra dữ liệu hoặc mã khám bệnh.";
+                return RedirectToAction("Index");
+            }
+
+            var chiTietHoaDon = await context.Database
+         .SqlQuery<ChiTietHoaDonGiaiMa>($"EXEC sp_XemChiTietHoaDonTheoKhamBenh @maKhamBenh={maKhamBenh}, @certName={certName}")
+         .ToListAsync();
+
+          
+
+            if (!chiTietHoaDon.Any())
+            {
+                TempData["ErrorMessage"] = "Không có chi tiết hóa đơn nào.";
+                return RedirectToAction("Index");
+            }
+
+            var model = new HoaDonViewModel
+            {
+                HoaDon = new HoaDon
+                {
+                    MaHoaDon = hoaDonCreated.MaHoaDon 
+                },
+                ChiTietHoaDon = chiTietHoaDon
             };
+           
 
-            ViewBag.ChiTietHoaDon = chiTietHoaDon;
-            ViewBag.TotalAmount = chiTietHoaDon.Sum(x => x.DonGia);
 
-            return View("ThanhToan", hoaDonModel);
+            return View("ThanhToan", model);
         }
-
-
         [HttpPost]
-        public async Task<IActionResult> XacNhanThanhToan(HoaDon model)
+        public async Task<IActionResult> XacNhanThanhToan(HoaDonViewModel model)
         {
+            Console.WriteLine("----- [XacNhanThanhToan] -----");
+            Console.WriteLine($"MaHoaDon: {model.HoaDon.MaHoaDon}");
+            Console.WriteLine($"SoTienNhan: {model.HoaDon.SoTienNhan}");
+            Console.WriteLine($"SoTienThoi: {model.HoaDon.SoTienThoi}");
+
             var connStr = await _connProvider.GetDataConnectionStringAsync();
 
             try
@@ -93,19 +118,9 @@ namespace QLBenhVien.Controllers
 
                 using var cmd = new SqlCommand("sp_CapNhatThanhToanHoaDon", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@maHoaDon", model.MaHoaDon);
-                cmd.Parameters.Add(new SqlParameter("@soTienNhan", SqlDbType.Decimal)
-                {
-                    Precision = 15,
-                    Scale = 2,
-                    Value = model.SoTienNhan
-                });
-                cmd.Parameters.Add(new SqlParameter("@soTienThoi", SqlDbType.Decimal)
-                {
-                    Precision = 15,
-                    Scale = 2,
-                    Value = model.SoTienThoi
-                });
+                cmd.Parameters.AddWithValue("@maHoaDon", model.HoaDon.MaHoaDon);
+                cmd.Parameters.AddWithValue("@soTienNhan", model.HoaDon.SoTienNhan);
+                cmd.Parameters.AddWithValue("@soTienThoi", model.HoaDon.SoTienThoi);
 
                 await cmd.ExecuteNonQueryAsync();
                 TempData["Success_ThanhToanHDKCB"] = "Thanh toán thành công.";
@@ -117,5 +132,8 @@ namespace QLBenhVien.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+
     }
 }

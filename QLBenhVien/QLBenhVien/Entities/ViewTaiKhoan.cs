@@ -12,6 +12,4 @@ public partial class ViewTaiKhoan
     public string? TypeId { get; set; }
 
     public DateTime? CreatedDate { get; set; }
-
-    public string? HasKey { get; set; }
 }

@@ -11,11 +11,9 @@ public partial class Account
 
     public string? MaNhanVien { get; set; }
 
-    public DateTime? CreatedDate { get; set; }
-
     public string? TypeId { get; set; }
 
-    public string? HasKey { get; set; }
+    public DateTime? CreatedDate { get; set; }
 
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }
