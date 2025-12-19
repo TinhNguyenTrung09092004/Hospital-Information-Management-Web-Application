@@ -59,7 +59,7 @@ GO
 
 use QLBenhVien_ACCOUNT
 go
-
+select * from ACCOUNT
 CREATE OR ALTER PROCEDURE sp_ThemTaiKhoanNV
     @username VARCHAR(50),
     @passwordHash VARBINARY(MAX),

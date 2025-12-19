@@ -12,7 +12,7 @@ GRANT EXECUTE
     ON OBJECT::[dbo].sp_CheckKeyAccount TO userBenhVien
     AS [dbo];
 GO
-drop proc sp_CheckKeyAccount
+--drop proc sp_CheckKeyAccount
 
 CREATE OR ALTER PROCEDURE sp_ThucHienTaoKey
     @keyValue NVARCHAR(100),  

@@ -26,10 +26,12 @@ WHERE
             WHERE cthd.maChiTietKham = ct.ID AND hd.thanhToan = '0'
         )
     )
+    AND ct.maPhongKham IS NOT NULL
     AND CONVERT(DATE, kb.ngayKham) = CONVERT(DATE, GETDATE());
 GO
-	GRANT SELECT ON OBJECT::viewTaiVu TO userBenhVien;
+GRANT SELECT ON OBJECT::viewTaiVu TO userBenhVien;
 GO
+
 
 --drop view viewTaiVu
 

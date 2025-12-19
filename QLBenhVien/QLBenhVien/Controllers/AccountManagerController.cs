@@ -47,7 +47,7 @@ namespace QLBenhVien.Controllers
 
            var maNhanViens = context
     .Set<QLBenhVien.Models.MaNhanVien>()
-    .FromSqlRaw("EXEC sp_LayMaNhanVien")
+    .FromSqlRaw("EXEC sp_LayMaNV")
     .AsEnumerable()
     .Select(x => x.MaNhanVienId)
     .ToList();
@@ -71,7 +71,6 @@ namespace QLBenhVien.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Gọi lại hàm Get để nạp dropdown nếu có lỗi nhập
                 return await Create();
             }
 

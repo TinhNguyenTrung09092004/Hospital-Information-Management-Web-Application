@@ -95,11 +95,12 @@ GO
 GRANT EXECUTE ON OBJECT::sp_GiaiMaKhamBenh TO userBenhVien;
 Go
 --drop proc sp_GiaiMaKhamBenh
+update BACSI set hasKey = '0'
 
---EXEC sp_GiaiMaKhamBenh 
---    @maKhamBenh = 1, 
---    @ma = 'bb', 
---    @BSCert = 'BSCert';
+EXEC sp_GiaiMaKhamBenh 
+    @maKhamBenh = 13, 
+    @ma = 'aaa', 
+    @BSCert = 'BSCert';
 
 
 

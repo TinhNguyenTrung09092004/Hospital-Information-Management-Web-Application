@@ -247,12 +247,10 @@
                 <a asp-controller="DieuPhoi" asp-action="Index">Điều phối Bệnh nhân</a>
             </li>
         }
-        @* @if (User.HasClaim("TypeID", "1")) *@
-        @* { *@
-        @*     <li class="dropdown"> *@
-        @*         <a href="#" id="openDoctorKeyModal">Nhập lại khóa ▸</a> *@
-        @*     </li> *@
-        @* } *@
+
+        <li id="changePassword">
+            <a asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+        </li>
 
         <li id="logoutSidebar">
             <a href="#" id="logoutLink">Đăng xuất</a>

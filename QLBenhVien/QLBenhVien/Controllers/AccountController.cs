@@ -9,6 +9,7 @@ using QLBenhVien.Models;
 using QLBenhVien.Services;
 using System.Security.Claims;
 using System.Data;
+using System.Text;
 
 namespace QLBenhVien.Controllers
 {
@@ -147,6 +148,67 @@ namespace QLBenhVien.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             return RedirectToAction("Index", "Home");
         }
+
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var username = User.Identity?.Name ?? "";
+            if (string.IsNullOrEmpty(username))
+            {
+                ModelState.AddModelError("", "Không tìm thấy thông tin người dùng.");
+                return View(model);
+            }
+
+            var connStr = await _connProvider.GetAccountConnectionStringAsync();
+            using var connection = new SqlConnection(connStr);
+            await connection.OpenAsync();
+
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+
+            var currentPasswordBytes = System.Text.Encoding.UTF8.GetBytes(model.CurrentPassword);
+            var currentPasswordHash = sha256.ComputeHash(currentPasswordBytes);
+
+            var newPasswordBytes = System.Text.Encoding.UTF8.GetBytes(model.NewPassword);
+            var newPasswordHash = sha256.ComputeHash(newPasswordBytes);
+
+            using var command = new SqlCommand("sp_DoiMatKhau", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.Add("@currentPasswordHash", SqlDbType.VarBinary, -1).Value = currentPasswordHash;
+            command.Parameters.Add("@newPasswordHash", SqlDbType.VarBinary, -1).Value = newPasswordHash;
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+                TempData["SuccessMessage"] = "Đổi mật khẩu thành công.";
+                return RedirectToAction("ChangePassword");
+            }
+            catch (SqlException ex)
+            {
+                ModelState.AddModelError("", "Lỗi khi đổi mật khẩu: " + ex.Message);
+                return View(model);
+            }
+        }
+
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Logout()

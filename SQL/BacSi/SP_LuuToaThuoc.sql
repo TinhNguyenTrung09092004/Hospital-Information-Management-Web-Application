@@ -132,7 +132,7 @@ Go
 --    @ma = 'bb',
 --    @BSCert = 'BSCert';
 
---EXEC sp_XemToaThuocTheoKhamBenh_GiaiMa
---    @maKhamBenh = 2,
---    @ma = 'â',
---    @BSCert = 'BSCert';
+EXEC sp_XemToaThuocTheoKhamBenh_GiaiMa
+    @maKhamBenh = 13,
+    @ma = 'aaa',
+    @BSCert = 'BSCert';

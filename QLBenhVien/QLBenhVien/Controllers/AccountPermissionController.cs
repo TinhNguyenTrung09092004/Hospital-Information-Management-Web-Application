@@ -52,6 +52,7 @@ namespace QLBenhVien.Controllers
             var connStr = await _connProvider.GetAccountConnectionStringAsync();
             using var context = QlbenhVienAccountContextFactory.Create(connStr);
 
+
             var allQuyens = await context.ViewQuyens
                 .FromSqlRaw("EXEC sp_LayQuyen")
                 .ToListAsync();

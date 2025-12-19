@@ -47,9 +47,26 @@ namespace QLBenhVien.Controllers
             if (benhNhan == null)
             {
                 ViewBag.KhongConBenhNhan = true;
-                ViewBag.DanhSachDichVu = new SelectList(new List<string>(), "", "");
+
+                ViewBag.DanhSachDichVu = new SelectList(Enumerable.Empty<string>(), "", "");
+                var userIdentity = (ClaimsIdentity)User.Identity!;
+                var existingClaim = userIdentity.FindFirst("MaKhamBenh");
+
+                if (existingClaim != null)
+                {
+                    userIdentity.RemoveClaim(existingClaim);
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(userIdentity)
+                    );
+                }
+
+
                 return View();
             }
+
+
 
 
             var maKhamBenh = benhNhan.MaKhamBenh.ToString();

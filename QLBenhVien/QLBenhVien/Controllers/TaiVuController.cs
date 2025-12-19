@@ -39,8 +39,6 @@ namespace QLBenhVien.Controllers
             return View(pagedList);
         }
 
-        // Controller sửa lại
-        // Controller sửa lại
         [HttpPost]
         public async Task<IActionResult> ThanhToan(int maKhamBenh)
         {
@@ -104,11 +102,6 @@ namespace QLBenhVien.Controllers
         [HttpPost]
         public async Task<IActionResult> XacNhanThanhToan(HoaDonViewModel model)
         {
-            Console.WriteLine("----- [XacNhanThanhToan] -----");
-            Console.WriteLine($"MaHoaDon: {model.HoaDon.MaHoaDon}");
-            Console.WriteLine($"SoTienNhan: {model.HoaDon.SoTienNhan}");
-            Console.WriteLine($"SoTienThoi: {model.HoaDon.SoTienThoi}");
-
             var connStr = await _connProvider.GetDataConnectionStringAsync();
 
             try
@@ -132,8 +125,6 @@ namespace QLBenhVien.Controllers
 
             return RedirectToAction("Index");
         }
-
-
 
     }
 }

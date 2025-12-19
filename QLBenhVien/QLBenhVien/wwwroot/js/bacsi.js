@@ -33,9 +33,15 @@
     }
 
     window.hoanTatXuLy = function () {
-        actionButtons.forEach(btn => btn.classList.add("d-none"));
-        xacNhanSection.classList.add("d-none");
-        if (btnNextPatient) btnNextPatient.classList.remove("d-none");
+        const khongConBenhNhan = document.body.dataset.khongcon === "True";
+
+        if (khongConBenhNhan) {
+            window.location.href = "/BacSi/Index";
+        } else {
+            actionButtons.forEach(btn => btn.classList.add("d-none"));
+            xacNhanSection.classList.add("d-none");
+            if (btnNextPatient) btnNextPatient.classList.remove("d-none");
+        }
     };
 
     if (mainForm && actionButtons.length) {
@@ -130,7 +136,6 @@
                 const formData = new FormData();
                 formData.append("TrieuChung", trieuChung);
                 formData.append("ChanDoanCuoiCung", chanDoan);
-             
 
                 fetch(postUrl, {
                     method: "POST",
@@ -191,18 +196,15 @@
                     .then(result => {
                         alert(result.message);
                         if (result.success) {
-                            // Tat cho di xet nghiem
                             const xetBtn = document.querySelector("button[data-action='xetnghiem']");
                             xetBtn?.setAttribute("disabled", "true");
                             xetBtn?.classList.add("disabled");
 
-                            //  Bat Kham benh
                             const khamBtn = document.querySelector("button[data-action='kham']");
                             khamBtn?.classList.remove("d-none");
                             khamBtn.disabled = false;
                             khamBtn?.classList.remove("disabled");
 
-                            // Bat Ke toa thuoc
                             const ketoaBtn = document.querySelector("button[data-action='ketoa']");
                             ketoaBtn?.classList.remove("d-none");
                             ketoaBtn.disabled = false;

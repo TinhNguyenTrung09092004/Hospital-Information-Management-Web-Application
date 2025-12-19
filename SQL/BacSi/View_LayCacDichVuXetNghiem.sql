@@ -29,3 +29,4 @@ GRANT EXECUTE
 GO
 
 --drop proc sp_LayDanhSachXetNghiem
+

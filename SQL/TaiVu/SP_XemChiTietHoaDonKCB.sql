@@ -22,7 +22,6 @@ GO
 GO
 
 --drop view view_ChiTietHoaDonTaiVu
-
 CREATE OR ALTER PROCEDURE sp_XemChiTietHoaDonTheoKhamBenh
     @maKhamBenh INT,
     @certName NVARCHAR(100)
@@ -33,6 +32,7 @@ BEGIN
 
     DECLARE @sql NVARCHAR(MAX);
 
+    -- Tạo chuỗi truy vấn động với Cert_ID('Tên chứng chỉ')
     SET @sql = '
         SELECT 
             maHoaDon,
@@ -41,7 +41,7 @@ BEGIN
             maDichVu,
             tenDichVu,
             TRY_CAST(
-                CONVERT(NVARCHAR(MAX), DecryptByCert(Cert_ID(''' + @certName + '''), donGia))
+                CONVERT(NVARCHAR(MAX), DecryptByCert(Cert_ID(''' + REPLACE(@certName, '''', '''''') + '''), donGia))
                 AS DECIMAL(15,2)
             ) AS donGia,
             ngayLap,
@@ -53,7 +53,12 @@ BEGIN
     EXEC sp_executesql @sql, N'@maKhamBenh INT', @maKhamBenh;
 END;
 GO
-	GRANT EXECUTE ON OBJECT::sp_XemChiTietHoaDonTheoKhamBenh TO userBenhVien AS [dbo];
-GO
+
+
+GRANT EXECUTE ON OBJECT::sp_XemChiTietHoaDonTheoKhamBenh TO userBenhVien AS [dbo];
+go
 
 --drop proc sp_XemChiTietHoaDonTheoKhamBenh
+select * from BACSI
+select * from LICH_LAMVIEC
+select * from KHAMBENH

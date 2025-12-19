@@ -1,0 +1,44 @@
+﻿USE master;
+GO
+
+ALTER DATABASE QLBenhVien
+SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+GO
+
+RESTORE DATABASE QLBenhVien
+FROM DISK = N'E:\Protector_BMCSDL\Backup\QLBenhVien_20250528_1636.bak'
+WITH 
+    REPLACE,
+    RECOVERY,
+    STATS = 10;
+GO
+
+ALTER DATABASE QLBenhVien
+SET MULTI_USER;
+GO
+
+-- Khôi phục QLBenhVien_ACCOUNT
+ALTER DATABASE QLBenhVien_ACCOUNT
+SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+GO
+
+RESTORE DATABASE QLBenhVien_ACCOUNT
+FROM DISK = N'E:\Protector_BMCSDL\Backup\QLBenhVien_ACCOUNT_20250528_1636.bak'
+WITH 
+    REPLACE,
+    RECOVERY,
+    STATS = 10;
+GO
+
+ALTER DATABASE QLBenhVien_ACCOUNT
+SET MULTI_USER;
+GO
+
+-- Kiểm tra trạng thái database
+SELECT 
+    name,
+    state_desc,
+    recovery_model_desc
+FROM sys.databases
+WHERE name IN ('QLBenhVien', 'QLBenhVien_ACCOUNT');
+GO

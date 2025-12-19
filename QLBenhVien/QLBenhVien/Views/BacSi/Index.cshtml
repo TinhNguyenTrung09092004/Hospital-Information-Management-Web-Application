@@ -5,7 +5,7 @@
     var khongConBenhNhan = ViewBag.KhongConBenhNhan == true;
 }
 
-<body>
+<body data-khongcon="@khongConBenhNhan">
     @if (khongConBenhNhan)
     {
         <h1 class="text-center text-danger">Không còn bệnh nhân đang đợi khám</h1>
