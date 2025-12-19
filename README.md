@@ -213,4 +213,3 @@ Sau khi import dữ liệu mẫu, có thể sử dụng các tài khoản sau đ
 Vui lòng tạo issue hoặc pull request nếu phát hiện lỗi hoặc muốn đóng góp cải tiến.
 
 ## Giấy phép (License)
-[Thêm thông tin license nếu có]
